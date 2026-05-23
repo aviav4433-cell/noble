@@ -1250,7 +1250,7 @@ function loadFromSheet(){
       if(!r["מזהה מכונה"])return;
       var m=machines.find(function(x){return x.id===String(r["מזהה מכונה"]);});
       if(m&&r["סטטוס"])m.status=r["סטטוס"].trim();
-      else if(!m)machines.push({id:String(r["מזהה מכונה"]),type:String(r["סוג"]||""),status:String(r["סטטוס"]||"פנויה")});
+      else if(!m)machines.push({id:String(r["מזהה מכונה"]),type:String(r["סוג מכונה"]||""),status:String(r["סטטוס"]||"פנויה")});
     });
     journal.length=0;
     rawJ.forEach(function(r){
