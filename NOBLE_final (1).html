@@ -1,0 +1,2364 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>NOBLE ניהול מכבסה</title>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0e1117;--bg2:#161b26;--bg3:#1e2536;--bg4:#252d40;
+  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.13);
+  --text:#e8eaf0;--text2:#8b93a8;--text3:#555e75;
+  --accent:#3b82f6;--accent2:#60a5fa;
+  --green:#22c55e;--green-bg:rgba(34,197,94,0.1);
+  --red:#ef4444;--red-bg:rgba(239,68,68,0.1);
+  --yellow:#f59e0b;--yellow-bg:rgba(245,158,11,0.1);
+  --blue-bg:rgba(59,130,246,0.1);
+  --purple:#a855f7;--purple-bg:rgba(168,85,247,0.1);
+  --cyan:#06b6d4;
+  --nav-h:60px;--safe-bottom:env(safe-area-inset-bottom,0px);--topbar-h:56px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+
+/* TOPBAR */
+.topbar{position:fixed;top:0;right:0;left:0;z-index:100;height:var(--topbar-h);background:var(--bg2);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 16px;gap:10px;}
+.topbar-logo{font-size:18px;font-weight:900;letter-spacing:-0.5px;color:var(--accent2);}
+.topbar-sub{font-size:10px;color:var(--text3);margin-top:1px;}
+.topbar-spacer{flex:1;}
+.topbar-badge{background:var(--blue-bg);color:var(--accent2);font-size:11px;font-weight:600;padding:4px 10px;border-radius:20px;border:1px solid rgba(59,130,246,0.2);}
+.back-btn{background:var(--bg3);border:1px solid var(--border);color:var(--text2);font-size:12px;font-weight:500;padding:5px 12px;border-radius:8px;cursor:pointer;display:none;align-items:center;gap:5px;transition:all .15s;}
+.back-btn.visible{display:flex;}
+
+/* BOTTOM NAV */
+.bottom-nav{position:fixed;bottom:0;right:0;left:0;z-index:100;height:calc(var(--nav-h) + var(--safe-bottom));padding-bottom:var(--safe-bottom);background:var(--bg2);border-top:1px solid var(--border);display:flex;}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;transition:all .15s;padding:6px 2px;color:var(--text3);font-size:9px;font-weight:500;border-top:2px solid transparent;}
+.nav-item.active{color:var(--accent2);border-top-color:var(--accent2);}
+.nav-item svg{width:18px;height:18px;}
+
+/* CONTENT */
+.content{padding-top:calc(var(--topbar-h) + 16px);padding-bottom:calc(var(--nav-h) + var(--safe-bottom) + 20px);padding-right:14px;padding-left:14px;max-width:600px;margin:0 auto;}
+.screen{display:none;animation:fadeUp .2s ease;}
+.screen.active{display:block;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+/* COMMON */
+.section-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;margin-top:18px;}
+.section-title{font-size:15px;font-weight:700;}
+.section-count{font-size:11px;color:var(--text2);background:var(--bg3);padding:3px 8px;border-radius:20px;}
+.badge{display:inline-flex;align-items:center;font-size:10px;font-weight:700;padding:3px 8px;border-radius:20px;letter-spacing:.3px;}
+.badge-green{background:var(--green-bg);color:var(--green);border:1px solid rgba(34,197,94,0.2);}
+.badge-red{background:var(--red-bg);color:var(--red);border:1px solid rgba(239,68,68,0.2);}
+.badge-blue{background:var(--blue-bg);color:var(--accent2);border:1px solid rgba(59,130,246,0.2);}
+.badge-yellow{background:var(--yellow-bg);color:var(--yellow);border:1px solid rgba(245,158,11,0.2);}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:12px;}
+.card-title{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:var(--text3);margin-bottom:14px;}
+.detail-row{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--border);}
+.detail-row:last-child{border-bottom:none;}
+.detail-key{font-size:13px;color:var(--text2);}
+.detail-val{font-size:13px;font-weight:600;}
+.list-item{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:13px 14px;margin-bottom:8px;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:12px;}
+.list-item:hover{background:var(--bg3);border-color:var(--border2);}
+.list-icon{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;}
+.list-body{flex:1;min-width:0;}
+.list-title{font-size:14px;font-weight:600;}
+.list-sub{font-size:11px;color:var(--text2);margin-top:2px;}
+.stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px;}
+.stat-box{background:var(--bg3);border-radius:12px;padding:12px 8px;text-align:center;}
+.stat-num{font-size:19px;font-weight:900;}
+.stat-lbl{font-size:9px;color:var(--text3);margin-top:3px;}
+.run-btn{background:var(--accent);color:#fff;border:none;border-radius:10px;padding:11px 0;font-family:'Heebo',sans-serif;font-size:14px;font-weight:700;width:100%;cursor:pointer;margin-top:10px;transition:background .15s;}
+.run-btn:hover{background:#2563eb;}
+.result-empty{text-align:center;padding:30px 20px;color:var(--text3);font-size:13px;}
+
+/* HOME */
+.home-hero{background:linear-gradient(135deg,#1a2744 0%,#0e1117 100%);border:1px solid var(--border2);border-radius:16px;padding:18px;margin-bottom:14px;position:relative;overflow:hidden;}
+.home-hero::before{content:'';position:absolute;top:-30px;left:-30px;width:120px;height:120px;background:radial-gradient(circle,rgba(59,130,246,0.15) 0%,transparent 70%);pointer-events:none;}
+.hero-title{font-size:20px;font-weight:900;margin-bottom:2px;}
+.hero-sub{font-size:12px;color:var(--text2);}
+.hero-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:12px;}
+.hero-stats-2{display:grid;grid-template-columns:repeat(2,1fr);gap:7px;margin-top:7px;}
+.hero-stat{background:rgba(255,255,255,0.04);border-radius:10px;padding:9px 7px;text-align:center;}
+.hero-stat-num{font-size:17px;font-weight:900;color:var(--accent2);}
+.hero-stat-lbl{font-size:9px;color:var(--text3);margin-top:2px;}
+
+/* DAY STRIP */
+.day-strip{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:14px;}
+.day-strip-title{font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.7px;margin-bottom:12px;display:flex;align-items:center;gap:6px;}
+.day-live-dot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:pulse 2s infinite;flex-shrink:0;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.4;}}
+.day-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.day-cell{background:var(--bg3);border-radius:10px;padding:10px 8px;text-align:center;}
+.day-cell-num{font-size:18px;font-weight:900;}
+.day-cell-lbl{font-size:9px;color:var(--text3);margin-top:2px;}
+
+/* MENU GRID */
+.menu-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.menu-card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:16px 14px;cursor:pointer;transition:all .18s;position:relative;overflow:hidden;}
+.menu-card::after{content:'';position:absolute;top:0;right:0;width:3px;height:100%;background:var(--card-color,var(--accent));border-radius:0 14px 14px 0;}
+.menu-card:hover{background:var(--bg3);border-color:var(--border2);transform:translateY(-2px);}
+.menu-icon{font-size:24px;margin-bottom:8px;}
+.menu-name{font-size:13px;font-weight:700;margin-bottom:2px;}
+.menu-desc{font-size:10px;color:var(--text2);}
+.menu-count{position:absolute;top:10px;left:10px;background:var(--red-bg);color:var(--red);font-size:10px;font-weight:700;padding:2px 6px;border-radius:20px;border:1px solid rgba(239,68,68,0.2);}
+
+/* KANBAN */
+.kanban-strip{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:14px;cursor:pointer;}
+.kanban-header{display:flex;align-items:center;justify-content:space-between;}
+.kanban-title-row{display:flex;align-items:center;gap:8px;}
+.kanban-title{font-size:13px;font-weight:700;}
+.kanban-chevron{font-size:12px;color:var(--text3);transition:transform .2s;}
+.kanban-chevron.open{transform:rotate(180deg);}
+.kanban-body{display:none;margin-top:14px;}
+.kanban-body.open{display:block;}
+.kanban-scroll{display:flex;gap:10px;overflow-x:auto;padding-bottom:6px;-webkit-overflow-scrolling:touch;}
+.kanban-col{min-width:130px;background:var(--bg3);border-radius:12px;padding:10px;}
+.kanban-col-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--text3);margin-bottom:8px;display:flex;align-items:center;gap:5px;}
+.kanban-col-count{background:var(--bg4);border-radius:20px;padding:1px 6px;font-size:9px;color:var(--text2);}
+.kanban-card{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:8px 10px;margin-bottom:6px;}
+.kanban-card-hotel{font-size:11px;font-weight:700;margin-bottom:3px;}
+.kanban-card-cart{color:var(--text3);font-size:10px;}
+.kanban-card.warn{border-color:rgba(245,158,11,0.4);background:rgba(245,158,11,0.05);}
+
+/* ALERTS */
+.alert-strip{border-radius:12px;padding:10px 14px;margin-bottom:8px;display:flex;align-items:center;gap:10px;font-size:12px;font-weight:600;}
+.alert-warn{background:var(--yellow-bg);border:1px solid rgba(245,158,11,0.25);color:var(--yellow);}
+.alert-info{background:var(--blue-bg);border:1px solid rgba(59,130,246,0.25);color:var(--accent2);}
+.alert-icon{font-size:16px;flex-shrink:0;}
+
+/* MACHINES */
+.machine-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(76px,1fr));gap:8px;margin-bottom:12px;}
+.machine-box{background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:9px 7px;text-align:center;}
+.machine-box.ok{border-color:rgba(34,197,94,0.25);background:rgba(34,197,94,0.05);}
+.machine-box.broken{border-color:rgba(239,68,68,0.2);background:rgba(239,68,68,0.04);}
+.machine-box.busy{border-color:rgba(245,158,11,0.35);background:rgba(245,158,11,0.06);}
+.machine-id{font-size:15px;font-weight:900;margin-bottom:3px;}
+.machine-type{font-size:8px;color:var(--text3);margin-bottom:5px;}
+.machine-status{font-size:8px;font-weight:700;}
+.machine-box.ok .machine-status{color:var(--green);}
+.machine-box.broken .machine-status{color:var(--red);}
+.machine-box.busy .machine-status{color:var(--yellow);}
+.machine-warn-note{font-size:8px;color:var(--yellow);margin-top:3px;}
+.machine-broken-badge{display:inline-block;background:var(--red-bg);color:var(--red);border:1px solid rgba(239,68,68,0.4);border-radius:20px;font-size:9px;font-weight:800;padding:2px 8px;margin-top:4px;letter-spacing:.3px;}
+
+/* JOURNAL */
+.journal-item{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:11px 13px;margin-bottom:7px;display:flex;align-items:center;gap:10px;}
+.journal-item.journal-today{border-color:rgba(96,165,250,0.85);background:rgba(59,130,246,0.18);box-shadow:0 0 0 1px rgba(96,165,250,0.25);}
+.journal-item.journal-week{border-color:rgba(59,130,246,0.45);background:rgba(59,130,246,0.08);}
+.journal-item.journal-month{border-color:rgba(59,130,246,0.2);background:rgba(59,130,246,0.03);}
+.step-dot{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;}
+
+/* CLIENTS */
+.client-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:13px 14px;margin-bottom:9px;display:flex;align-items:center;gap:12px;}
+.client-avatar{width:40px;height:40px;border-radius:50%;background:var(--blue-bg);border:1px solid rgba(59,130,246,0.25);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;font-weight:700;color:var(--accent2);}
+
+/* KLITA DETAIL */
+.expand-btn{background:none;border:1px solid var(--border2);border-radius:8px;color:var(--text2);font-size:11px;font-weight:600;padding:5px 12px;cursor:pointer;font-family:'Heebo',sans-serif;transition:all .15s;width:100%;}
+.expand-btn:hover{background:var(--bg3);}
+.cart-history{display:none;margin-top:8px;}
+.cart-history.open{display:block;}
+.hist-item{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border);}
+.hist-item:last-child{border-bottom:none;}
+.hist-dot{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;}
+.hist-step{font-size:12px;font-weight:600;flex:1;}
+.hist-meta{font-size:10px;color:var(--text3);}
+.klita-cart-row{display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--bg3);border-radius:8px;margin-bottom:6px;}
+.klita-cart-badge{background:var(--blue-bg);color:var(--accent2);font-size:11px;font-weight:700;padding:3px 9px;border-radius:20px;border:1px solid rgba(59,130,246,0.2);flex-shrink:0;}
+.klita-cart-step{flex:1;font-size:12px;font-weight:600;}
+.klita-cart-time{font-size:10px;color:var(--text3);}
+
+/* WORKERS */
+.worker-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:10px;}
+.worker-header{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+.worker-avatar{width:38px;height:38px;border-radius:50%;background:var(--purple-bg);border:1px solid rgba(168,85,247,0.25);display:flex;align-items:center;justify-content:center;font-size:15px;color:var(--purple);}
+.worker-name{font-size:15px;font-weight:700;}
+.worker-role{font-size:11px;color:var(--text3);}
+.worker-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:10px;}
+.worker-stat{background:var(--bg3);border-radius:9px;padding:9px 7px;text-align:center;}
+.worker-stat-num{font-size:15px;font-weight:900;color:var(--accent2);}
+.worker-stat-lbl{font-size:8px;color:var(--text3);margin-top:2px;}
+.worker-step-pill{background:var(--bg3);border:1px solid var(--border);border-radius:20px;padding:3px 8px;font-size:10px;color:var(--text2);display:inline-block;margin:2px;}
+
+/* REPORTS */
+.report-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;}
+.rtab{background:var(--bg3);border:1px solid var(--border);border-radius:20px;padding:6px 12px;font-size:11px;font-weight:600;cursor:pointer;transition:all .15s;color:var(--text2);white-space:nowrap;}
+.rtab.active{background:var(--accent);border-color:var(--accent);color:#fff;}
+.filter-card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:14px;}
+.filter-title{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.7px;color:var(--text3);margin-bottom:10px;}
+.filter-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.filter-group{display:flex;flex-direction:column;gap:4px;}
+.filter-group.full{grid-column:1/-1;}
+.filter-label{font-size:10px;color:var(--text2);font-weight:500;}
+.filter-select,.filter-input{background:var(--bg3);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'Heebo',sans-serif;font-size:12px;padding:7px 9px;width:100%;outline:none;transition:border-color .15s;-webkit-appearance:none;}
+.filter-select:focus,.filter-input:focus{border-color:var(--accent);}
+.result-summary{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:12px;}
+.rs-box{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:11px 13px;}
+.rs-num{font-size:19px;font-weight:900;color:var(--accent2);}
+.rs-lbl{font-size:9px;color:var(--text3);margin-top:2px;}
+.result-table{background:var(--bg2);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:12px;}
+.rt-row{display:flex;align-items:center;padding:10px 13px;border-bottom:1px solid var(--border);gap:10px;}
+.rt-row:last-child{border-bottom:none;}
+.rt-row.header{background:var(--bg3);font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--text3);}
+.rt-name{flex:1;font-size:12px;font-weight:600;}
+.rt-val{font-size:12px;font-weight:700;color:var(--accent2);text-align:left;min-width:70px;}
+.rt-sub{font-size:10px;color:var(--text2);text-align:left;min-width:60px;}
+.bar-row{padding:9px 13px;border-bottom:1px solid var(--border);}
+.bar-row:last-child{border-bottom:none;}
+.bar-label-row{display:flex;justify-content:space-between;margin-bottom:4px;}
+.bar-name{font-size:11px;font-weight:600;}
+.bar-val{font-size:11px;font-weight:700;color:var(--accent2);}
+.bar-track{background:var(--bg4);border-radius:4px;height:5px;overflow:hidden;}
+.bar-fill{height:100%;border-radius:4px;background:var(--accent);transition:width .4s ease;}
+
+/* CHART */
+.chart-wrap{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:14px;}
+.chart-title{font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.6px;margin-bottom:12px;}
+
+/* REPORT SUM */
+.report-sum-box{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:13px;}
+.report-sum-num{font-size:21px;font-weight:900;color:var(--accent2);}
+.report-sum-lbl{font-size:9px;color:var(--text3);margin-top:3px;}
+.report-summary-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;}
+
+/* PORTAL */
+.portal-order-card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:10px;}
+.steps{display:flex;gap:4px;flex-wrap:wrap;}
+.step{padding:3px 9px;border-radius:20px;font-size:10px;font-weight:600;background:var(--bg3);color:var(--text3);border:1px solid var(--border);}
+.step.done{background:rgba(34,197,94,0.1);color:var(--green);border-color:rgba(34,197,94,0.2);}
+.step.current{background:var(--accent);color:white;border-color:var(--accent);}
+
+/* TOAST */
+.toast{position:fixed;bottom:80px;right:50%;transform:translateX(50%);background:#22c55e;color:white;padding:9px 18px;border-radius:20px;font-family:Heebo,sans-serif;font-size:12px;font-weight:700;z-index:9999;box-shadow:0 4px 12px rgba(0,0,0,0.3);white-space:nowrap;}
+
+/* LOADER */
+#loader-overlay{position:fixed;inset:0;background:rgba(14,17,23,0.95);z-index:999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* LOGIN */
+#login-overlay{position:fixed;inset:0;background:#0e1117;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:30px;}
+
+::-webkit-scrollbar{width:3px;}
+
+.klita-extra{display:none;}
+.klita-extra.open{display:block;}
+.klita-toggle-btn{background:var(--bg3);border:1px solid var(--border2);color:var(--text2);font-size:11px;font-weight:700;padding:5px 14px;border-radius:20px;cursor:pointer;font-family:'Heebo',sans-serif;margin:6px 0;display:inline-block;}
+
+.kb-row{display:flex;align-items:center;gap:8px;padding:10px 12px;background:var(--bg3);border-radius:10px;margin-bottom:6px;font-size:12px;}
+.kb-time{color:var(--text3);font-size:11px;min-width:38px;flex-shrink:0;}
+.kb-client{font-weight:700;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.kb-cart{color:var(--text2);font-size:11px;flex-shrink:0;}
+.kb-step{display:flex;align-items:center;gap:3px;font-size:11px;font-weight:600;flex-shrink:0;}
+.kb-worker{color:var(--text3);font-size:10px;flex-shrink:0;max-width:60px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.kb-machine{color:var(--text3);font-size:10px;flex-shrink:0;}
+.kb-filter-bar{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;}
+.kb-filter-btn{background:var(--bg3);border:1px solid var(--border);color:var(--text2);font-size:11px;font-weight:600;padding:4px 10px;border-radius:20px;cursor:pointer;font-family:'Heebo',sans-serif;}
+.kb-filter-btn.active{background:var(--blue-bg);border-color:rgba(59,130,246,0.4);color:var(--accent2);}
+</style>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0e1117">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="NOBLE">
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div style="display:flex;align-items:center;gap:8px;">
+    <div style="width:28px;height:28px;background:var(--blue-bg);border-radius:7px;border:1px solid rgba(59,130,246,0.3);display:flex;align-items:center;justify-content:center;font-weight:900;color:var(--accent2);font-size:13px;">N</div>
+    <div onclick="goTo('screen-home','בית')" style="cursor:pointer"><div class="topbar-logo">NOBLE</div><div class="topbar-sub">ניהול מכבסה</div></div>
+  </div>
+  <div class="topbar-spacer"></div>
+  <button class="back-btn" id="backBtn" onclick="goBack()">&#8592; חזרה</button>
+  <div class="topbar-badge" id="topbarBadge">בית</div>
+</div>
+
+<!-- CONTENT -->
+<div class="content">
+
+<!-- HOME -->
+<div class="screen active" id="screen-home">
+  <div id="home-alerts"></div>
+  <div class="home-hero">
+    <div class="hero-title">שלום 👋</div>
+    <div class="hero-sub">מכבסת NOBLE — סקירה כללית</div>
+    <div class="hero-stats">
+      <div class="hero-stat"><div class="hero-stat-num" id="hs-active">—</div><div class="hero-stat-lbl">לקוחות פעילים</div></div>
+      <div class="hero-stat"><div class="hero-stat-num" id="hs-hotels">—</div><div class="hero-stat-lbl">עגלות פעילות</div></div>
+      <div class="hero-stat"><div class="hero-stat-num" id="hs-today">—</div><div class="hero-stat-lbl">כביסות היום</div></div>
+    </div>
+    <div class="hero-stats-2">
+      <div class="hero-stat"><div class="hero-stat-num" id="hs-weight-today">—</div><div class="hero-stat-lbl">משקל היום (ק"ג)</div></div>
+      <div class="hero-stat"><div class="hero-stat-num" id="hs-weight-month">—</div><div class="hero-stat-lbl">משקל החודש (ק"ג)</div></div>
+    </div>
+  </div>
+
+  <div class="day-strip">
+    <div class="day-strip-title"><div class="day-live-dot"></div>סיכום יום עבודה נוכחי</div>
+    <div class="day-grid">
+      <div class="day-cell"><div class="day-cell-num" id="ds-intake" style="color:var(--accent2)">—</div><div class="day-cell-lbl">קליטות היום</div></div>
+      <div class="day-cell"><div class="day-cell-num" id="ds-done" style="color:var(--green)">—</div><div class="day-cell-lbl">הושלמו</div></div>
+      <div class="day-cell"><div class="day-cell-num" id="ds-active" style="color:var(--yellow)">—</div><div class="day-cell-lbl">לקוחות בתהליך</div></div>
+
+    </div>
+  </div>
+
+  <div class="kanban-strip" onclick="toggleKanban()">
+    <div class="kanban-header">
+      <div class="kanban-title-row">
+        <span style="font-size:16px">🔄</span>
+        <div><div class="kanban-title">לוח עגלות חי</div><div style="font-size:10px;color:var(--text3);margin-top:1px">לחץ לפתיחה מלאה</div></div>
+      </div>
+      <div class="kanban-chevron" id="kanban-chevron">▼</div>
+    </div>
+    <div class="kanban-body" id="kanban-body">
+      <div class="kanban-scroll" id="kanban-scroll"></div>
+    </div>
+  </div>
+
+  <div class="menu-grid">
+    <div class="menu-card" style="--card-color:#3b82f6" onclick="goTo('screen-klita','קליטות')">
+      <div class="menu-count" id="menu-count-klita">—</div>
+      <div class="menu-icon">📥</div><div class="menu-name">קליטות</div><div class="menu-desc">הזמנות פעילות</div>
+    </div>
+    <div class="menu-card" style="--card-color:#22c55e" onclick="goTo('screen-clients','לקוחות')">
+      <div class="menu-icon">🏨</div><div class="menu-name">לקוחות</div><div class="menu-desc">מלונות ומחירים</div>
+    </div>
+    <div class="menu-card" style="--card-color:#f59e0b" onclick="goTo('screen-machines','מכונות')">
+      <div class="menu-icon">⚙️</div><div class="menu-name">מכונות</div><div class="menu-desc">סטטוס ציוד</div>
+    </div>
+    <div class="menu-card" style="--card-color:#a855f7" onclick="goTo('screen-journal','יומן')">
+      <div class="menu-icon">📋</div><div class="menu-name">יומן</div><div class="menu-desc">היסטוריית פעולות</div>
+    </div>
+    <div class="menu-card" style="--card-color:#ef4444" onclick="goTo('screen-carts','עגלות')">
+      <div class="menu-icon">🛒</div><div class="menu-name">עגלות</div><div class="menu-desc">מצב עגלות</div>
+    </div>
+    <div class="menu-card" style="--card-color:#06b6d4" onclick="goTo('screen-reports','דוחות')">
+      <div class="menu-icon">📊</div><div class="menu-name">דוחות</div><div class="menu-desc">ניתוח וסיכומים</div>
+    </div>
+    <div class="menu-card" style="--card-color:#22c55e" onclick="goTo('screen-workers','עובדים')">
+      <div class="menu-icon">👷</div><div class="menu-name">עובדים</div><div class="menu-desc">ביצועים ומשמרות</div>
+    </div>
+    <div class="menu-card" style="--card-color:#f59e0b" onclick="goTo('screen-client-portal','פורטל לקוח')">
+      <div class="menu-icon">🔗</div><div class="menu-name">פורטל לקוח</div><div class="menu-desc">צפייה ומעקב</div>
+    </div>
+  </div>
+</div>
+
+<!-- KLITA LIST -->
+<div class="screen" id="screen-klita">
+  <div class="stat-row">
+    <div class="stat-box"><div class="stat-num" id="kl-open" style="color:var(--accent2)">—</div><div class="stat-lbl">פתוחות</div></div>
+    <div class="stat-box"><div class="stat-num" id="kl-process" style="color:var(--yellow)">—</div><div class="stat-lbl">בתהליך</div></div>
+    <div class="stat-box"><div class="stat-num" id="kl-total" style="color:var(--green)">—</div><div class="stat-lbl">סה"כ ₪</div></div>
+  </div>
+  <div class="section-hdr"><div class="section-title">קליטות פעילות</div><div class="section-count" id="kl-count">—</div></div>
+  <div id="klita-list"></div>
+</div>
+
+<!-- KLITA DETAIL -->
+<div class="screen" id="screen-klita-detail"><div id="klita-detail-content"></div></div>
+
+<!-- CLIENTS -->
+<div class="screen" id="screen-clients">
+  <div class="section-hdr"><div class="section-title">מלונות / לקוחות</div><div class="section-count" id="clients-count">—</div></div>
+  <div id="clients-list"></div>
+</div>
+<div class="screen" id="screen-client-detail"><div id="client-detail-content"></div></div>
+
+<!-- MACHINES -->
+<div class="screen" id="screen-machines">
+  <div class="stat-row">
+    <div class="stat-box"><div class="stat-num" id="mc-ok" style="color:var(--green)">—</div><div class="stat-lbl">פנויות</div></div>
+    <div class="stat-box"><div class="stat-num" id="mc-broken" style="color:var(--red)">—</div><div class="stat-lbl">תקולות</div></div>
+    <div class="stat-box"><div class="stat-num" id="mc-total">—</div><div class="stat-lbl">סה"כ</div></div>
+  </div>
+  <div id="machine-broken-alerts"></div>
+  <div class="section-hdr" style="margin-bottom:8px"><div class="section-title">מכונות כביסה</div></div>
+  <div class="machine-grid" id="washing-machines"></div>
+  <div class="section-hdr" style="margin-bottom:8px"><div class="section-title">ציוד נוסף</div></div>
+  <div class="machine-grid" id="other-machines"></div>
+</div>
+
+<!-- JOURNAL -->
+<div class="screen" id="screen-journal">
+  <div class="section-hdr"><div class="section-title">יומן פעולות</div><div class="section-count" id="journal-count">—</div></div>
+  <div id="journal-list"></div>
+</div>
+
+<!-- CARTS -->
+<div class="screen" id="screen-carts">
+  <div class="section-hdr"><div class="section-title">עגלות</div></div>
+  <div class="machine-grid" id="carts-grid"></div>
+</div>
+
+<!-- CART DETAIL -->
+<div class="screen" id="screen-cart-detail">
+  <div id="cart-detail-content"></div>
+</div>
+
+<!-- WORKERS -->
+<div class="screen" id="screen-workers">
+  <div class="stat-row">
+    <div class="stat-box"><div class="stat-num" id="wk-count" style="color:var(--purple)">—</div><div class="stat-lbl">סה"כ עובדים</div></div>
+    <div class="stat-box"><div class="stat-num" id="wk-active" style="color:var(--accent2)">—</div><div class="stat-lbl">פעילים בתקופה</div></div>
+    <div class="stat-box"><div class="stat-num" id="wk-ops" style="color:var(--yellow)">—</div><div class="stat-lbl">פעולות בתקופה</div></div>
+    <div class="stat-box"><div class="stat-num" id="wk-kg" style="color:var(--green)">—</div><div class="stat-lbl">ק"ג בתקופה</div></div>
+  </div>
+  <div class="filter-card" style="margin-bottom:10px">
+    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+      <div class="filter-label" style="margin:0">תקופה:</div>
+      <input type="date" id="wk-date-from" class="filter-select" style="width:140px">
+      <span style="color:var(--text3);font-size:12px">עד</span>
+      <input type="date" id="wk-date-to" class="filter-select" style="width:140px">
+      <button class="run-btn" style="padding:6px 16px;font-size:12px" onclick="renderWorkers()">הצג ←</button>
+      <button class="run-btn" style="padding:6px 12px;font-size:12px;background:var(--bg3);color:var(--text2)" onclick="clearWorkerDates()">היום</button>
+    </div>
+  </div>
+  <div class="section-hdr"><div class="section-title">מצבת עובדים</div><div class="section-count" id="workers-count">—</div></div>
+  <div id="workers-list"></div>
+</div>
+
+<!-- CLIENT PORTAL -->
+<div class="screen" id="screen-client-portal">
+  <div class="filter-card">
+    <div class="filter-title">🔗 פורטל לקוח</div>
+    <div class="filter-group full">
+      <div class="filter-label">בחר לקוח</div>
+      <select class="filter-select" id="portal-client-select"><option value="">— בחר לקוח —</option></select>
+    </div>
+    <button class="run-btn" onclick="loadClientPortal()">הצג מידע ←</button>
+  </div>
+  <div id="portal-content"></div>
+</div>
+
+<!-- REPORTS -->
+<div class="screen" id="screen-reports">
+  <div class="card" style="margin-bottom:12px">
+    <div class="card-title">💰 סיכום כספי תקופה</div>
+    <div class="report-summary-grid">
+      <div class="report-sum-box"><div class="report-sum-num" id="rep-today-charge">—</div><div class="report-sum-lbl">הכנסה היום</div></div>
+      <div class="report-sum-box"><div class="report-sum-num" id="rep-month-charge">—</div><div class="report-sum-lbl">הכנסה החודש</div></div>
+      <div class="report-sum-box"><div class="report-sum-num" id="rep-today-weight">—</div><div class="report-sum-lbl">משקל היום ק"ג</div></div>
+      <div class="report-sum-box"><div class="report-sum-num" id="rep-month-weight">—</div><div class="report-sum-lbl">משקל החודש ק"ג</div></div>
+    </div>
+  </div>
+
+  <div class="chart-wrap">
+    <div class="chart-title">📉 הכנסות — 7 ימים אחרונים</div>
+    <canvas id="revenue-chart" style="width:100%;max-height:180px;"></canvas>
+  </div>
+
+  <div class="card" style="margin-bottom:12px">
+    <div class="card-title">💰 מצב גביה</div>
+    <div class="report-summary-grid">
+      <div class="report-sum-box" onclick="showPaymentDetail('paid')" style="cursor:pointer;border:1px solid rgba(34,197,94,0.3)">
+        <div class="report-sum-num" id="rep-paid" style="color:var(--green)">—</div>
+        <div class="report-sum-lbl">שולם ✓ לחץ לפירוט</div>
+      </div>
+      <div class="report-sum-box" onclick="showPaymentDetail('unpaid')" style="cursor:pointer;border:1px solid rgba(239,68,68,0.3)">
+        <div class="report-sum-num" id="rep-unpaid" style="color:var(--red)">—</div>
+        <div class="report-sum-lbl">חוב פתוח ⚠ לחץ לפירוט</div>
+      </div>
+    </div>
+  </div>
+  <div id="payment-detail" style="display:none;margin-bottom:14px;"></div>
+
+  <div class="report-tabs">
+    <div class="rtab" onclick="setTab('client',this)">לפי לקוח</div>
+    <div class="rtab" onclick="setTab('machine',this)">לפי מכונה</div>
+    <div class="rtab" onclick="setTab('step',this)">לפי שלב</div>
+    <div class="rtab" onclick="setTab('cart',this)">לפי עגלה</div>
+    <div class="rtab" onclick="setTab('worker',this)">לפי עובד</div>
+    <div class="rtab active" onclick="setTab('utilization',this)">ניצולת מכונות</div>
+    <div class="rtab" onclick="setTab('custom',this)">פילטר מתקדם</div>
+    <div class="rtab" onclick="setTab('expenses',this)">הוצאות</div>
+  </div>
+
+  <div class="filter-card">
+    <div class="filter-title">🔍 סינון</div>
+    <div class="filter-grid" id="filter-fields"></div>
+    <button class="run-btn" onclick="runReport()">הפק דוח ←</button>
+  </div>
+
+  <div id="results-area"><div class="result-empty">בחר קריטריון והפק דוח</div></div>
+
+  <div id="print-btn-area" style="display:none;margin-top:10px;">
+    <button onclick="printReport()" style="width:100%;background:var(--bg2);border:1px solid var(--border2);border-radius:10px;padding:11px;font-family:Heebo,sans-serif;font-size:13px;font-weight:700;color:var(--text);cursor:pointer;">🖨️ הדפסה / שמירה כ-PDF</button>
+  </div>
+</div>
+
+<!-- WORKER DETAIL -->
+<div class="screen" id="screen-worker-detail">
+  <div id="worker-detail-content"></div>
+</div>
+
+</div><!-- /content -->
+
+<!-- BOTTOM NAV -->
+<div class="bottom-nav">
+  <div class="nav-item active" id="nav-home" onclick="goTo('screen-home','בית')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>בית
+  </div>
+  <div class="nav-item" id="nav-klita" onclick="goTo('screen-klita','קליטות')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>קליטות
+  </div>
+  <div class="nav-item" id="nav-machines" onclick="goTo('screen-machines','מכונות')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>מכונות
+  </div>
+  <div class="nav-item" id="nav-reports" onclick="goTo('screen-reports','דוחות')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>דוחות
+  </div>
+  <div class="nav-item" id="nav-clients" onclick="goTo('screen-clients','לקוחות')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>לקוחות
+  </div>
+</div>
+
+<!-- LOADER -->
+<div id="loader-overlay">
+  <div style="width:38px;height:38px;border:3px solid rgba(96,165,250,0.2);border-top-color:#60a5fa;border-radius:50%;animation:spin 0.8s linear infinite;"></div>
+  <div id="loader-msg" style="font-family:'Heebo',sans-serif;color:#8b93a8;font-size:13px;">טוען נתונים...</div>
+</div>
+
+<!-- LOGIN -->
+<div id="login-overlay">
+  <div style="width:100%;max-width:340px;">
+    <div style="text-align:center;margin-bottom:28px;">
+      <div style="font-size:42px;font-weight:900;color:var(--accent2);letter-spacing:-2px;">NOBLE</div>
+      <div style="font-size:12px;color:var(--text3);margin-top:4px;">ניהול מכבסה</div>
+    </div>
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:22px;">
+      <div style="font-size:13px;color:var(--text2);margin-bottom:14px;">הכנס סיסמה להמשך</div>
+      <input id="pass-input" type="password" placeholder="סיסמה" onkeydown="if(event.key==='Enter')checkPass()"
+        style="width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:'Heebo',sans-serif;font-size:16px;padding:12px 14px;outline:none;margin-bottom:10px;direction:ltr;">
+      <div id="pass-error" style="color:var(--red);font-size:11px;font-family:Heebo,sans-serif;margin-bottom:8px;display:none;">סיסמה שגויה — נסה שוב</div>
+      <button onclick="checkPass()" style="width:100%;background:var(--accent);color:#fff;border:none;border-radius:10px;padding:12px;font-family:'Heebo',sans-serif;font-size:15px;font-weight:700;cursor:pointer;">כניסה</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════
+// DATA
+// ═══════════════════════════════════════════════
+var clients=[],klitot=[],allKlitot=[],machines=[],journal=[],carts=[],cartAssignments=[];
+var stepIcons={"כביסה":"🫧","ייבוש":"💨","גיהוץ":"🔥","אריזה":"📦","שקילה":"⚖️","מוכן":"✅","שינוע":"🚚","נמסר ללקוח":"🏁","קליטה":"📥"};
+var stepColors={"כביסה":"var(--blue-bg)","ייבוש":"var(--yellow-bg)","גיהוץ":"rgba(239,68,68,0.1)","אריזה":"var(--purple-bg)","שקילה":"rgba(6,182,212,0.1)","מוכן":"var(--green-bg)","שינוע":"var(--yellow-bg)","נמסר ללקוח":"var(--green-bg)","קליטה":"var(--blue-bg)"};
+
+// ═══════════════════════════════════════════════
+// TIMEOUT CONSTANTS
+// ═══════════════════════════════════════════════
+var STEP_TIMEOUTS_MS = {
+  "כביסה": 40 * 60 * 1000,
+  "ייבוש": 40 * 60 * 1000,
+  "גיהוץ": 3 * 60 * 60 * 1000,
+  "שקילה": 5 * 60 * 1000,
+  "אריזה": 15 * 60 * 1000
+};
+var DEFAULT_TIMEOUT_MS = 4 * 60 * 60 * 1000;
+
+// ═══════════════════════════════════════════════
+// DATE UTILS
+// ═══════════════════════════════════════════════
+function excelToDate(s){
+  if(!s||s===0||s==="")return new Date(0);
+  if(typeof s==="string"&&s.indexOf("Date(")===0){
+    var inner=s.replace("Date(","").replace(")","");
+    var p=inner.split(",");
+    return new Date(+p[0],+p[1],+p[2],+(p[3]||0),+(p[4]||0),+(p[5]||0));
+  }
+  if(typeof s==="string"&&s.indexOf("/")!==-1){
+    var parts=s.split(" "),dp=parts[0].split("/"),tp=parts[1]?parts[1].split(":"):[0,0,0];
+    return new Date(+dp[2],+dp[1]-1,+dp[0],+(tp[0]||0),+(tp[1]||0),+(tp[2]||0));
+  }
+  var n=Number(s);
+  if(isNaN(n)||n<1)return new Date(0);
+  return new Date((n-25569)*86400*1000);
+}
+function isStepActive(j, nowMs) {
+  var timeout = STEP_TIMEOUTS_MS[j.step] !== undefined
+    ? STEP_TIMEOUTS_MS[j.step]
+    : DEFAULT_TIMEOUT_MS;
+  return (nowMs - excelToDate(j.time).getTime()) < timeout;
+}
+function isKlitaCompleted(klitaId, nowMs) {
+  var relJ = journal.filter(function(j) { return j.klitaId === klitaId; });
+  if (!relJ.length) return false;
+  var last = relJ.reduce(function(a, b) {
+    return excelToDate(a.time) > excelToDate(b.time) ? a : b;
+  });
+  var lastMs = excelToDate(last.time).getTime();
+  var TWO_HOURS = 2 * 60 * 60 * 1000;
+  return isToday(last.time) && (nowMs - lastMs) > TWO_HOURS;
+}
+function fmtDate(s){try{var d=excelToDate(s);if(!s||isNaN(d.getTime())||d.getTime()<1000)return"---";return d.toLocaleDateString("he-IL",{day:"2-digit",month:"2-digit",year:"2-digit"});}catch(e){return"---";}}
+function fmtDateTime(s){try{var d=excelToDate(s);if(!s||isNaN(d.getTime())||d.getTime()<1000)return"---";return d.toLocaleString("he-IL",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"});}catch(e){return"---";}}
+function serialToYMD(s){try{var d=excelToDate(s);if(!s||isNaN(d.getTime())||d.getTime()<1000)return"";return d.toISOString().slice(0,10);}catch(e){return"";}}
+function getBusinessDayRange(){
+  var now=new Date(),start=new Date(now);
+  start.setHours(5,0,0,0);
+  if(now.getHours()<5)start.setDate(start.getDate()-1);
+  var end=new Date(start);end.setDate(end.getDate()+1);end.setHours(4,59,59,999);
+  return{start:start,end:end};
+}
+function isToday(t){var d=excelToDate(t),r=getBusinessDayRange();return d>=r.start&&d<=r.end;}
+function isThisMonth(t){var d=excelToDate(t),n=new Date();return d.getFullYear()===n.getFullYear()&&d.getMonth()===n.getMonth();}
+
+// ═══════════════════════════════════════════════
+// NAV
+// ═══════════════════════════════════════════════
+var navHistory=[];
+var navMap={"screen-home":"nav-home","screen-klita":"nav-klita","screen-machines":"nav-machines","screen-reports":"nav-reports","screen-clients":"nav-clients","screen-worker-detail":""};
+function goTo(id,badge){
+  document.querySelectorAll(".screen").forEach(function(s){s.classList.remove("active");});
+  document.getElementById(id).classList.add("active");
+  document.querySelectorAll(".nav-item").forEach(function(n){n.classList.remove("active");});
+  if(navMap[id])document.getElementById(navMap[id]).classList.add("active");
+  document.getElementById("topbarBadge").textContent=badge||"";
+  document.getElementById("backBtn").classList.toggle("visible",id!=="screen-home");
+  if(id!=="screen-home")navHistory.push(id);else navHistory=[];
+  window.scrollTo(0,0);
+  history.pushState({screen:id,badge:badge||""},"",location.pathname);
+}
+function goBack(){
+  navHistory.pop();
+  var p=navHistory.length?navHistory.pop():"screen-home";
+  var labels={"screen-home":"בית","screen-klita":"קליטות","screen-clients":"לקוחות","screen-machines":"מכונות","screen-reports":"דוחות","screen-journal":"יומן","screen-carts":"עגלות","screen-workers":"עובדים","screen-client-portal":"פורטל לקוח"};
+  goTo(p,labels[p]||"");
+}
+window.addEventListener('popstate',function(e){
+  if(e.state&&e.state.screen){
+    var labels={"screen-home":"בית","screen-klita":"קליטות","screen-clients":"לקוחות","screen-machines":"מכונות","screen-reports":"דוחות","screen-journal":"יומן","screen-carts":"עגלות","screen-workers":"עובדים","screen-client-portal":"פורטל לקוח","screen-cart-detail":"עגלה","screen-worker-detail":"פרטי עובד"};
+    document.querySelectorAll(".screen").forEach(function(s){s.classList.remove("active");});
+    document.getElementById(e.state.screen).classList.add("active");
+    document.querySelectorAll(".nav-item").forEach(function(n){n.classList.remove("active");});
+    if(navMap[e.state.screen])document.getElementById(navMap[e.state.screen]).classList.add("active");
+    document.getElementById("topbarBadge").textContent=e.state.badge;
+    document.getElementById("backBtn").classList.toggle("visible",e.state.screen!=="screen-home");
+    if(e.state.screen!=="screen-home")navHistory.push(e.state.screen);else navHistory=[];
+    window.scrollTo(0,0);
+  }else{
+    goTo("screen-home","בית");
+  }
+});
+
+// ═══════════════════════════════════════════════
+// TOAST
+// ═══════════════════════════════════════════════
+function showToast(msg,color){
+  var t=document.createElement("div");t.className="toast";t.style.background=color||"#22c55e";t.textContent=msg;
+  document.body.appendChild(t);setTimeout(function(){if(t.parentNode)t.parentNode.removeChild(t);},3000);
+}
+function copyClientLink(url){
+  if(navigator.clipboard){navigator.clipboard.writeText(url).then(function(){showToast("הקישור הועתק 📋");});}
+  else{var el=document.createElement("textarea");el.value=url;document.body.appendChild(el);el.select();document.execCommand("copy");document.body.removeChild(el);showToast("הקישור הועתק 📋");}
+}
+
+// ═══════════════════════════════════════════════
+// KANBAN
+// ═══════════════════════════════════════════════
+var kanbanOpen=false;
+function toggleKanban(){
+  kanbanOpen=!kanbanOpen;
+  document.getElementById("kanban-body").classList.toggle("open",kanbanOpen);
+  document.getElementById("kanban-chevron").classList.toggle("open",kanbanOpen);
+  if(kanbanOpen)renderKanban();
+}
+function renderKanban(){
+  // ── build active cart list (preserve existing data logic) ──
+  var cartLastMap={};
+  journal.forEach(function(j){
+    var cid=String(j.cart);
+    if(!cartLastMap[cid]||excelToDate(j.time)>excelToDate(cartLastMap[cid].time))cartLastMap[cid]=j;
+  });
+  var kanbanNow=Date.now();
+  var activeItems=[];
+  Object.keys(cartLastMap).forEach(function(cartId){
+    var lastJ=cartLastMap[cartId];
+    var lastStep=lastJ.step;
+    if(lastStep==="נמסר ללקוח"||lastStep==="מוכן לאיסוף")return;
+    if(!isStepActive(lastJ,kanbanNow))return;
+    var c=clients.find(function(x){return x.id===lastJ.clientId;})||{name:"—"};
+    activeItems.push({
+      time:lastJ.time,
+      client:c.name,
+      cart:cartId,
+      step:lastStep,
+      worker:lastJ.worker||"—",
+      machine:lastJ.machine||""
+    });
+  });
+  // sort newest first
+  activeItems.sort(function(a,b){return excelToDate(b.time)-excelToDate(a.time);});
+
+  // ── build filter bar ──
+  var stepsInData={};
+  activeItems.forEach(function(i){stepsInData[i.step]=true;});
+  var filterSteps=Object.keys(stepsInData);
+  var filterHtml='<div class="kb-filter-bar">';
+  filterHtml+='<button class="kb-filter-btn active" onclick="kbSetFilter(null,this)">הכל</button>';
+  filterSteps.forEach(function(s){
+    filterHtml+='<button class="kb-filter-btn" onclick="kbSetFilter(\''+s+'\',this)">'+(stepIcons[s]||"")+" "+s+'</button>';
+  });
+  filterHtml+='</div>';
+
+  // ── build rows ──
+  var rowsHtml="";
+  if(!activeItems.length){
+    rowsHtml='<div style="text-align:center;padding:20px;color:var(--text3);font-size:13px;">אין עגלות פעילות כרגע</div>';
+  } else {
+    activeItems.forEach(function(item){
+      var d=excelToDate(item.time);
+      var hhmm=d.toLocaleTimeString("he-IL",{hour:"2-digit",minute:"2-digit"});
+      rowsHtml+='<div class="kb-row" data-step="'+item.step+'">';
+      rowsHtml+='<span class="kb-time">'+hhmm+'</span>';
+      rowsHtml+='<span class="kb-client">'+item.client+'</span>';
+      rowsHtml+='<span class="kb-cart">עגלה '+item.cart+'</span>';
+      rowsHtml+='<span class="kb-step">'+(stepIcons[item.step]||"")+" "+item.step+'</span>';
+      rowsHtml+='<span class="kb-worker">'+item.worker+'</span>';
+      if(item.machine)rowsHtml+='<span class="kb-machine">'+item.machine+'</span>';
+      rowsHtml+='</div>';
+    });
+  }
+
+  document.getElementById("kanban-scroll").innerHTML=filterHtml+rowsHtml;
+}
+
+function kbSetFilter(step,btn){
+  document.querySelectorAll(".kb-filter-btn").forEach(function(b){b.classList.remove("active");});
+  btn.classList.add("active");
+  document.querySelectorAll(".kb-row").forEach(function(row){
+    row.style.display=(!step||row.dataset.step===step)?"flex":"none";
+  });
+}
+
+// ═══════════════════════════════════════════════
+// HOME STATS
+// ═══════════════════════════════════════════════
+function updateHomeStats(){
+  var activeClientSet={};
+  var NOW=Date.now();
+  journal.forEach(function(j){if(isStepActive(j,NOW)&&j.clientId)activeClientSet[j.clientId]=true;});
+  var active=Object.keys(activeClientSet).length;
+  document.getElementById("hs-active").textContent=active;
+  // עגלות פעילות — לפי יומן
+  var cartLastMap2={};
+  journal.forEach(function(j){var cid=String(j.cart);if(!cartLastMap2[cid]||excelToDate(j.time)>excelToDate(cartLastMap2[cid].time))cartLastMap2[cid]=j;});
+  var activeCarts=Object.values(cartLastMap2).filter(function(j){return j.step!=="נמסר ללקוח"&&j.step!=="מוכן לאיסוף"&&isStepActive(j,NOW);}).length;
+  document.getElementById("hs-hotels").textContent=activeCarts;
+  document.getElementById("menu-count-klita").textContent=active;
+  var todayCharge=0,todayWeight=0,monthWeight=0,monthCharge=0;
+  journal.forEach(function(j){
+    if(j.step!=="שקילה")return;
+    if(j.amount&&isToday(j.time))todayCharge+=j.amount;
+    if(j.weight&&isToday(j.time))todayWeight+=j.weight;
+    if(j.weight&&isThisMonth(j.time))monthWeight+=j.weight;
+    if(j.amount&&isThisMonth(j.time))monthCharge+=j.amount;
+  });
+  var washToday={};
+  journal.forEach(function(j){if(j.step==="כביסה"&&isToday(j.time)&&j.cart)washToday[String(j.cart)]=true;});
+  document.getElementById("hs-today").textContent=Object.keys(washToday).length;
+  document.getElementById("hs-weight-today").textContent=Math.round(todayWeight).toLocaleString();
+  document.getElementById("hs-weight-month").textContent=Math.round(monthWeight).toLocaleString();
+  var r=getBusinessDayRange();
+  var todayIntake=allKlitot.filter(function(k){var d=excelToDate(k.dateRaw);return d>=r.start&&d<=r.end;}).length;
+  var nowMs=Date.now();
+  var todayDone=allKlitot.filter(function(k){var d=excelToDate(k.dateRaw);return d>=r.start&&d<=r.end&&(k.delivered||isKlitaCompleted(k.id,nowMs));}).length;
+  var todayClientSet={};
+  journal.forEach(function(j){if(isToday(j.time)&&j.clientId)todayClientSet[j.clientId]=true;});
+  document.getElementById("ds-intake").textContent=todayIntake;
+  document.getElementById("ds-done").textContent=todayDone;
+  document.getElementById("ds-active").textContent=active;
+
+  var e;
+  e=document.getElementById("rep-today-charge");if(e)e.textContent="₪"+Math.round(todayCharge).toLocaleString();
+  e=document.getElementById("rep-month-charge");if(e)e.textContent="₪"+Math.round(monthCharge).toLocaleString();
+  e=document.getElementById("rep-today-weight");if(e)e.textContent=Math.round(todayWeight).toLocaleString();
+  e=document.getElementById("rep-month-weight");if(e)e.textContent=Math.round(monthWeight).toLocaleString();
+  var totalPaid=0,totalUnpaid=0;
+  allKlitot.forEach(function(k){if(k.total>0){if(k.paid)totalPaid+=k.total;else totalUnpaid+=k.total;}});
+  e=document.getElementById("rep-paid");if(e)e.textContent="₪"+Math.round(totalPaid).toLocaleString();
+  e=document.getElementById("rep-unpaid");if(e)e.textContent="₪"+Math.round(totalUnpaid).toLocaleString();
+  buildAlerts();
+  setTimeout(buildCharts,100);
+}
+
+function buildAlerts(){
+  var alerts=[];
+  var broken=machines.filter(function(m){return m.status==="תקול";});
+  if(broken.length)alerts.push({type:"warn",icon:"⚠️",msg:broken.length+" מכונות תקולות: "+broken.map(function(m){return m.id;}).join(", ")});
+  var debts=allKlitot.filter(function(k){return!k.paid&&k.total>0;});
+  if(debts.length){var dt=debts.reduce(function(s,k){return s+(k.total||0);},0);alerts.push({type:"info",icon:"💰",msg:debts.length+" קליטות עם חוב פתוח · ₪"+Math.round(dt).toLocaleString()});}
+  document.getElementById("home-alerts").innerHTML=alerts.map(function(a){return'<div class="alert-strip alert-'+a.type+'"><span class="alert-icon">'+a.icon+'</span>'+a.msg+'</div>';}).join("");
+}
+
+// ═══════════════════════════════════════════════
+// CHARTS
+// ═══════════════════════════════════════════════
+function buildCharts(){buildRevenueChart();}
+function buildRevenueChart(){
+  var canvas=document.getElementById("revenue-chart");if(!canvas)return;
+  var ctx=canvas.getContext("2d");
+  var days=[];
+  for(var i=6;i>=0;i--){
+    var d=new Date();d.setHours(5,0,0,0);d.setDate(d.getDate()-i);
+    var end=new Date(d);end.setDate(end.getDate()+1);end.setHours(4,59,59,999);
+    var lbl=d.toLocaleDateString("he-IL",{day:"2-digit",month:"2-digit"});
+    var amt=journal.reduce(function(s,j){var jd=excelToDate(j.time);return s+(jd>=d&&jd<=end&&j.amount?j.amount:0);},0);
+    days.push({lbl:lbl,amount:amt});
+  }
+  var max=Math.max.apply(null,days.map(function(d){return d.amount;}))||1;
+  var dpr=window.devicePixelRatio||1;
+  var W=canvas.offsetWidth||300,H=160;
+  canvas.width=W*dpr;canvas.height=H*dpr;
+  canvas.style.width=W+"px";canvas.style.height=H+"px";
+  ctx.scale(dpr,dpr);
+  ctx.clearRect(0,0,W,H);
+  var pad=30,gW=W-pad*2,gH=H-40;
+  ctx.strokeStyle="rgba(255,255,255,0.05)";ctx.lineWidth=1;
+  for(var g=0;g<=3;g++){var y=pad+gH-(gH*g/3);ctx.beginPath();ctx.moveTo(pad,y);ctx.lineTo(W-pad,y);ctx.stroke();}
+  var barW=gW/days.length*0.6,gap=gW/days.length;
+  var bars=[];
+  days.forEach(function(d,i){
+    var x=pad+gap*i+gap*0.2,h=d.amount?(d.amount/max)*gH:0,y=pad+gH-h;
+    bars.push({x:x,y:y,w:barW,h:h,day:d});
+    var gr=ctx.createLinearGradient(0,y,0,y+h);gr.addColorStop(0,"rgba(96,165,250,0.9)");gr.addColorStop(1,"rgba(96,165,250,0.3)");
+    ctx.fillStyle=gr;
+    ctx.beginPath();
+    if(ctx.roundRect)ctx.roundRect(x,y,barW,h,3);else ctx.rect(x,y,barW,h);
+    ctx.fill();
+    ctx.fillStyle="rgba(85,94,117,0.9)";ctx.font="9px Heebo,sans-serif";ctx.textAlign="center";
+    ctx.fillText(d.lbl,x+barW/2,H-6);
+    if(d.amount){ctx.fillStyle="#60a5fa";ctx.font="bold 9px Heebo,sans-serif";ctx.fillText("₪"+Math.round(d.amount/1000)+"k",x+barW/2,y-4);}
+  });
+  // Tooltip
+  var tooltip=document.getElementById("revenue-tooltip");
+  if(!tooltip){
+    tooltip=document.createElement("div");
+    tooltip.id="revenue-tooltip";
+    tooltip.style.cssText="position:absolute;background:rgba(22,27,38,0.95);border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:12px;color:var(--fg1);pointer-events:none;display:none;z-index:99;direction:rtl;";
+    canvas.parentNode.style.position="relative";
+    canvas.parentNode.appendChild(tooltip);
+  }
+  function getHitBar(ex,ey){
+    var rect=canvas.getBoundingClientRect();
+    var mx=(ex-rect.left)*(W/rect.width),my=(ey-rect.top)*(H/rect.height);
+    for(var k=0;k<bars.length;k++){var b=bars[k];if(mx>=b.x&&mx<=b.x+b.w&&my>=b.y&&my<=b.y+b.h)return b;}
+    return null;
+  }
+  canvas.style.cursor="pointer";
+  canvas.onmousemove=function(e){
+    var b=getHitBar(e.clientX,e.clientY);
+    if(b&&b.day.amount){
+      tooltip.textContent=b.day.lbl+" — ₪"+Math.round(b.day.amount).toLocaleString();
+      tooltip.style.display="block";
+      var rect=canvas.getBoundingClientRect();
+      var cx=(b.x+b.w/2)*(rect.width/W);
+      tooltip.style.left=(cx-tooltip.offsetWidth/2)+"px";
+      tooltip.style.top=(b.y*(rect.height/H)-36)+"px";
+    } else {tooltip.style.display="none";}
+  };
+  canvas.onmouseleave=function(){tooltip.style.display="none";};
+  canvas.onclick=function(e){
+    var b=getHitBar(e.clientX,e.clientY);
+    if(!b||!b.day.amount)return;
+    // חישוב תאריך ISO מהתווית dd/mm
+    var parts=b.day.lbl.split("/");
+    var now=new Date();
+    var yr=now.getFullYear();
+    var isoDate=yr+"-"+(parts[1].length===1?"0":"")+parts[1]+"-"+(parts[0].length===1?"0":"")+parts[0];
+    var tab=document.querySelector('.rtab[onclick*="client"]');
+    if(tab){tab.click();}
+    setTimeout(function(){
+      var fromEl=document.getElementById("f-from"),toEl=document.getElementById("f-to");
+      if(fromEl&&toEl){fromEl.value=isoDate;toEl.value=isoDate;runReport();}
+    },100);
+  };
+}
+// ═══════════════════════════════════════════════
+// KLITA LIST
+// ═══════════════════════════════════════════════
+function renderKlitaList(){
+  var bgs=["var(--blue-bg)","var(--yellow-bg)","var(--green-bg)"];
+  var open=0,proc=0,tot=0;
+  var html=klitot.map(function(k,i){
+    var c=clients.find(function(x){return x.id===k.clientId;})||{name:"—"};
+    if(k.status==="פתוחה")open++;if(k.status==="בתהליך")proc++;tot+=k.total||0;
+    return'<div class="list-item" onclick="showKlitaDetail('+i+')">'+
+      '<div class="list-icon" style="background:'+bgs[i%3]+'">🏰</div>'+
+      '<div class="list-body"><div class="list-title">'+c.name+'</div><div class="list-sub">'+k.id.slice(0,8)+' · '+fmtDate(k.dateRaw)+'</div></div>'+
+      '<div style="text-align:left"><div style="font-size:13px;font-weight:700;color:var(--accent2)">'+(k.total?"₪"+k.total.toLocaleString():"—")+'</div>'+
+      '<div style="margin-top:3px"><span class="badge '+(k.status==="בתהליך"||k.status==="פתוחה"?"badge-yellow":"badge-blue")+'">'+k.status+'</span></div></div></div>';
+  }).join("");
+  document.getElementById("klita-list").innerHTML=html||'<div class="result-empty">אין קליטות פעילות</div>';
+  document.getElementById("kl-open").textContent=open;
+  document.getElementById("kl-process").textContent=proc;
+  document.getElementById("kl-total").textContent="₪"+tot.toLocaleString();
+  document.getElementById("kl-count").textContent=klitot.length+" רשומות";
+}
+
+// ═══════════════════════════════════════════════
+// KLITA DETAIL — תיקון עגלות מרובות + סכום נכון
+// ═══════════════════════════════════════════════
+function showKlitaDetail(i){
+  var k=klitot[i];
+  var c=clients.find(function(x){return x.id===k.clientId;})||{name:"—"};
+  var relJ=journal.filter(function(j){return j.klitaId===k.id;});
+  var cartMap={};
+  relJ.forEach(function(j){var cid=String(j.cart);if(!cartMap[cid])cartMap[cid]=[];cartMap[cid].push(j);});
+  var cartIds=Object.keys(cartMap);
+  var multiCart=cartIds.length>1;
+  // חישוב נכון — סכום כל העגלות
+  var totalWeight=relJ.reduce(function(s,j){return s+(j.weight||0);},0);
+  var totalAmount=relJ.reduce(function(s,j){return s+(j.amount||0);},0);
+  var extraId='klita-extra-'+k.id.replace(/[^a-z0-9]/gi,'_');
+  var html='<div class="card">'+
+    '<div class="card-title">פרטי קליטה</div>'+
+    '<div class="detail-row"><div class="detail-key">לקוח</div><div class="detail-val">'+c.name+'</div></div>'+
+    '<div class="detail-row"><div class="detail-key">סטטוס</div><div class="detail-val"><span class="badge '+(k.status==="בתהליך"||k.status==="פתוחה"?"badge-yellow":"badge-blue")+'">'+k.status+'</span></div></div>'+
+    '<div class="detail-row"><div class="detail-key">משקל כולל</div><div class="detail-val">'+(totalWeight?Math.round(totalWeight).toLocaleString()+' ק"ג':"טרם נשקל")+'</div></div>'+
+    '<div class="detail-row"><div class="detail-key">סה"כ כל העגלות</div><div class="detail-val" style="color:var(--green)">'+(totalAmount?"₪"+Math.round(totalAmount).toLocaleString():"—")+'</div></div>'+
+    '<div class="detail-row"><div class="detail-key">תאריך</div><div class="detail-val">'+fmtDate(k.dateRaw)+'</div></div>'+
+    '<button class="klita-toggle-btn" onclick="toggleKlitaExtra(\''+extraId+'\',this)">[+] פרטים נוספים</button>'+
+    '<div class="klita-extra" id="'+extraId+'">'+
+      '<div class="detail-row"><div class="detail-key">מזהה</div><div class="detail-val" style="font-size:10px;color:var(--text3)">'+k.id+'</div></div>'+
+      '<div class="detail-row"><div class="detail-key">מחיר לק"ג</div><div class="detail-val">₪'+k.price+'</div></div>'+
+      '<div class="detail-row"><div class="detail-key">שולם</div><div class="detail-val">'+(k.paid?'<span class="badge badge-green">✓ שולם</span>':'<span class="badge badge-red">לא שולם</span>')+'</div></div>'+
+    '</div>'+
+    '</div>';
+  html+='<button style="width:100%;background:var(--green-bg);color:var(--green);border:1px solid rgba(34,197,94,0.3);border-radius:10px;padding:10px;font-family:Heebo,sans-serif;font-size:13px;font-weight:700;cursor:pointer;margin-bottom:14px;display:flex;align-items:center;justify-content:center;gap:6px;" onclick="printInvoice(\''+k.id+'\')">📄 הפק חשבונית PDF</button>';
+  html+='<div class="section-hdr"><div class="section-title">עגלות בקליטה זו</div><div class="section-count">'+cartIds.length+'</div></div>';
+  cartIds.forEach(function(cartId){
+    var cj=cartMap[cartId];
+    // מיין לפי זמן לקבלת השלב הנוכחי האמיתי
+    var cjSorted=cj.slice().sort(function(a,b){return excelToDate(a.time)-excelToDate(b.time);});
+    var lastStep=cjSorted[cjSorted.length-1].step;
+    var lastIcon=stepIcons[lastStep]||"📌",lastColor=stepColors[lastStep]||"var(--bg3)";
+    var cw=cj.reduce(function(s,j){return s+(j.weight||0);},0);
+    var ca=cj.reduce(function(s,j){return s+(j.amount||0);},0);
+    html+='<div class="card" style="margin-bottom:10px">';
+    html+='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">';
+    html+='<div style="display:flex;align-items:center;gap:8px">';
+    html+='<div class="step-dot" style="background:'+lastColor+'">'+lastIcon+'</div>';
+    html+='<div><div style="font-size:13px;font-weight:700">עגלה '+cartId+'</div>';
+    html+='<div style="font-size:11px;color:var(--text3)">שלב נוכחי: '+lastStep+'</div></div></div>';
+    if(cw)html+='<div style="text-align:left"><div style="font-size:13px;font-weight:700;color:var(--accent2)">'+Math.round(cw)+'ק"ג</div><div style="font-size:10px;color:var(--text3)">₪'+Math.round(ca).toLocaleString()+'</div></div>';
+    html+='</div>';
+    if(multiCart){
+      html+='<button class="expand-btn" onclick="toggleCartHistory(this)">▼ הצג היסטוריה</button>';
+      html+='<div class="cart-history">';
+    } else {
+      html+='<div style="border-top:1px solid var(--border);padding-top:10px;">';
+    }
+    cj.forEach(function(j){
+      var icon=stepIcons[j.step]||"📌",bg=stepColors[j.step]||"var(--bg3)";
+      var machObj=machines.find(function(m){return m.id===String(j.machine||"");});
+      var warnNote=machObj&&machObj.status==="תקול"?' <span style="color:var(--yellow);font-size:9px">⚠ מכונה תקולה</span>':"";
+      html+='<div class="hist-item">'+
+        '<div class="hist-dot" style="background:'+bg+'">'+icon+'</div>'+
+        '<div style="flex:1"><div class="hist-step">'+j.step+(j.machine?" — "+j.machine:"")+warnNote+'</div>'+
+        '<div class="hist-meta">'+fmtDateTime(j.time)+'</div></div>'+
+        (j.weight?'<div style="font-size:12px;font-weight:700;color:var(--accent2)">'+j.weight+'ק"ג · ₪'+j.amount.toLocaleString()+'</div>':"")+
+        '</div>';
+    });
+    html+='</div></div>';
+  });
+  document.getElementById("klita-detail-content").innerHTML=html;
+  goTo("screen-klita-detail","פרטי קליטה");
+}
+function toggleKlitaExtra(id,btn){
+  var el=document.getElementById(id);
+  if(!el)return;
+  var open=el.classList.toggle("open");
+  btn.textContent=open?"[−] פרטים נוספים":"[+] פרטים נוספים";
+}
+function toggleExpand(id){
+  var el=document.getElementById(id);
+  var chev=document.getElementById("chev-"+id);
+  if(!el)return;
+  var isOpen=el.style.display!=="none";
+  el.style.display=isOpen?"none":"block";
+  if(chev)chev.textContent=isOpen?"▼":"▲";
+}
+function toggleCartHistory(btn){
+  var hist=btn.nextElementSibling;
+  var isOpen=hist.classList.contains("open");
+  hist.classList.toggle("open",!isOpen);
+  btn.textContent=isOpen?"▼ הצג היסטוריה":"▲ סגור היסטוריה";
+}
+
+// ═══════════════════════════════════════════════
+// INVOICE PDF
+// ═══════════════════════════════════════════════
+function printInvoice(klitaId){
+  var k=allKlitot.find(function(x){return x.id===klitaId;})||klitot.find(function(x){return x.id===klitaId;});
+  if(!k)return;
+  var c=clients.find(function(x){return x.id===k.clientId;})||{name:"—",price:0};
+  var relJ=journal.filter(function(j){return j.klitaId===klitaId;});
+  var cartMap={};relJ.forEach(function(j){var cid=String(j.cart);if(!cartMap[cid])cartMap[cid]=[];cartMap[cid].push(j);});
+  var totalWeight=relJ.reduce(function(s,j){return s+(j.weight||0);},0);
+  var totalAmount=relJ.reduce(function(s,j){return s+(j.amount||0);},0);
+  var cartRows=Object.entries(cartMap).map(function(e){
+    var cid=e[0],cj=e[1],w=cj.reduce(function(s,j){return s+(j.weight||0);},0),a=cj.reduce(function(s,j){return s+(j.amount||0);},0);
+    return'<tr><td>עגלה '+cid+'</td><td>'+(w?w+'ק"ג':"—")+'</td><td>'+(a?"₪"+a.toLocaleString():"—")+'</td><td>'+cj[cj.length-1].step+'</td></tr>';
+  }).join("");
+  var win=window.open("","_blank");
+  win.document.write('<!DOCTYPE html><html dir="rtl"><head><meta charset="UTF-8"><title>חשבונית NOBLE</title>');
+  win.document.write('<style>body{font-family:Heebo,Arial,sans-serif;direction:rtl;padding:40px;color:#111;max-width:700px;margin:0 auto;}.logo{font-size:36px;font-weight:900;color:#1d4ed8;letter-spacing:-2px;}.header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:30px;border-bottom:2px solid #1d4ed8;padding-bottom:16px;}.info-row{display:flex;gap:12px;margin-bottom:6px;font-size:13px;}.info-key{color:#666;min-width:100px;}.info-val{font-weight:700;}table{width:100%;border-collapse:collapse;margin-bottom:20px;}th{background:#1d4ed8;color:white;padding:8px 12px;font-size:12px;}td{padding:8px 12px;border-bottom:1px solid #eee;font-size:12px;}.total-row td{font-size:16px;font-weight:900;color:#1d4ed8;}.footer{margin-top:30px;font-size:11px;color:#999;text-align:center;border-top:1px solid #eee;padding-top:14px;}@media print{body{padding:20px;}}</style>');
+  win.document.write('</head><body>');
+  win.document.write('<div class="header"><div><div class="logo">NOBLE</div><div style="font-size:12px;color:#666">שירות. מקצועות. נקיון.</div></div>');
+  win.document.write('<div style="text-align:left"><div style="font-weight:700">חשבונית</div><div style="font-size:11px;color:#666">'+klitaId.slice(0,8).toUpperCase()+'</div><div style="font-size:11px;color:#666">'+new Date().toLocaleDateString("he-IL")+'</div></div></div>');
+  win.document.write('<div class="info-row"><span class="info-key">לקוח:</span><span class="info-val">'+c.name+'</span></div>');
+  win.document.write('<div class="info-row"><span class="info-key">מחיר לק"ג:</span><span class="info-val">₪'+c.price.toFixed(2)+'</span></div>');
+  win.document.write('<div class="info-row" style="margin-bottom:20px"><span class="info-key">סטטוס תשלום:</span><span class="info-val" style="color:'+(k.paid?"#16a34a":"#dc2626")+'">'+(k.paid?"✓ שולם":"⚠ טרם שולם")+'</span></div>');
+  win.document.write('<table><thead><tr><th>עגלה</th><th>משקל</th><th>חיוב</th><th>שלב אחרון</th></tr></thead><tbody>'+cartRows+'</tbody></table>');
+  win.document.write('<table><tbody><tr class="total-row"><td colspan="2">סה"כ משקל</td><td colspan="2">'+(totalWeight?Math.round(totalWeight)+'ק"ג':"—")+'</td></tr>');
+  win.document.write('<tr class="total-row"><td colspan="2">סה"כ לחיוב</td><td colspan="2">'+(totalAmount?"₪"+Math.round(totalAmount).toLocaleString():"—")+'</td></tr></tbody></table>');
+  win.document.write('<div class="footer">NOBLE מכבסה — שירות. מקצועות. נקיון.</div>');
+  win.document.write('<script>window.onload=function(){window.print();}<\/script></body></html>');
+  win.document.close();
+}
+
+// ═══════════════════════════════════════════════
+// CLIENTS
+// ═══════════════════════════════════════════════
+function renderClients(){
+  document.getElementById("clients-count").textContent=clients.length+" לקוחות";
+  var sel=document.getElementById("portal-client-select");
+  if(sel)sel.innerHTML='<option value="">— בחר לקוח —</option>'+clients.map(function(c){return'<option value="'+c.id+'">'+c.name+'</option>';}).join("");
+  document.getElementById("clients-list").innerHTML=clients.map(function(c,i){
+    var ini=c.name?c.name.charAt(0):"?";
+    var totalCharge=journal.filter(function(j){return j.clientId===c.id&&j.amount;}).reduce(function(s,j){return s+(j.amount||0);},0);
+    var totalKg=journal.filter(function(j){return j.clientId===c.id&&j.weight;}).reduce(function(s,j){return s+(j.weight||0);},0);
+    var portalLink="https://aviav4433-cell.github.io/noble/client.html?id="+c.id;
+    return'<div class="client-card">'+
+      '<div class="client-avatar" onclick="showClientDetail('+i+')" style="cursor:pointer">'+ini+'</div>'+
+      '<div style="flex:1;cursor:pointer" onclick="showClientDetail('+i+')">'+
+        '<div style="font-size:14px;font-weight:700">'+c.name+'</div>'+
+        '<div style="font-size:11px;color:var(--text3)">₪'+c.price.toFixed(2)+' לק"ג · '+Math.round(totalKg).toLocaleString()+' ק"ג</div>'+
+      '</div>'+
+      '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:5px">'+
+        '<div style="font-size:14px;font-weight:900;color:var(--green)">₪'+Math.round(totalCharge).toLocaleString()+'</div>'+
+        '<button onclick="copyClientLink(\''+portalLink+'\')" style="background:var(--blue-bg);border:1px solid rgba(59,130,246,0.3);color:var(--accent2);font-family:Heebo,sans-serif;font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;cursor:pointer;">📋 קישור</button>'+
+      '</div></div>';
+  }).join("");
+}
+function showClientDetail(i){
+  var c=clients[i];
+  var relK=allKlitot.filter(function(k){return k.clientId===c.id;});
+  var relJ=journal.filter(function(j){return j.clientId===c.id;});
+  var totalKg=relJ.reduce(function(s,j){return s+(j.weight||0);},0);
+  var totalCharge=relJ.reduce(function(s,j){return s+(j.amount||0);},0);
+  var unpaid=relK.filter(function(k){return!k.paid&&k.total>0;}).reduce(function(s,k){return s+(k.total||0);},0);
+  var monthKg=relJ.filter(function(j){return isThisMonth(j.time)&&j.weight;}).reduce(function(s,j){return s+(j.weight||0);},0);
+  // קליטות החודש
+  var monthKlitot=relK.filter(function(k){return isThisMonth(k.dateRaw);}).length;
+  // פעולות החודש לפי סוג
+  var monthJ=relJ.filter(function(j){return isThisMonth(j.time);});
+  var opsByStep={};
+  monthJ.forEach(function(j){if(j.step)opsByStep[j.step]=(opsByStep[j.step]||0)+1;});
+  var stepOrder2=["כביסה","ייבוש","גיהוץ","אריזה","שקילה","שינוע","נמסר ללקוח"];
+  var opsHtml=stepOrder2.filter(function(s){return opsByStep[s];}).map(function(s){
+    return'<div class="detail-row"><div class="detail-key">'+(stepIcons[s]||"")+' '+s+'</div><div class="detail-val">'+opsByStep[s]+' פעולות</div></div>';
+  }).join("");
+
+  var html='<div class="card">'+
+    '<div class="card-title">'+c.name+'</div>'+
+    '<div class="detail-row"><div class="detail-key">מחיר לק"ג</div><div class="detail-val">₪'+c.price.toFixed(2)+'</div></div>'+
+    '<div class="detail-row"><div class="detail-key">סה"כ ק"ג</div><div class="detail-val">'+Math.round(totalKg).toLocaleString()+' ק"ג</div></div>'+
+    '<div class="detail-row"><div class="detail-key">ק"ג החודש</div><div class="detail-val">'+Math.round(monthKg).toLocaleString()+' ק"ג</div></div>'+
+    '<div class="detail-row"><div class="detail-key">קליטות החודש</div><div class="detail-val" style="color:var(--accent2)">'+monthKlitot+'</div></div>'+
+    '<div class="detail-row"><div class="detail-key">סה"כ חיוב</div><div class="detail-val" style="color:var(--green)">₪'+Math.round(totalCharge).toLocaleString()+'</div></div>'+
+    '<div class="detail-row"><div class="detail-key">חוב פתוח</div><div class="detail-val" style="color:var(--red)">₪'+Math.round(unpaid).toLocaleString()+'</div></div>'+
+    '</div>';
+  if(opsHtml){
+    html+='<div class="card"><div class="card-title">📊 פעולות החודש</div>'+opsHtml+'</div>';
+  }
+  html+='<div class="filter-card" style="margin-bottom:10px"><div class="filter-title">🔍 סינון היסטוריה</div>'+
+    '<div class="filter-grid">'+
+    '<div class="filter-group"><div class="filter-label">מתאריך</div><input type="date" class="filter-input" id="cd-from-'+i+'"></div>'+
+    '<div class="filter-group"><div class="filter-label">עד תאריך</div><input type="date" class="filter-input" id="cd-to-'+i+'"></div>'+
+    '<div class="filter-group full"><div class="filter-label">סוג פעולה</div><select class="filter-select" id="cd-step-'+i+'">'+
+    '<option value="">— הכל —</option>'+["כביסה","ייבוש","גיהוץ","אריזה","שקילה","שינוע","נמסר ללקוח"].map(function(s){return'<option value="'+s+'">'+s+'</option>';}).join("")+
+    '</select></div></div>'+
+    '<button class="run-btn" onclick="filterClientHistory('+i+')">סנן ←</button></div>';
+  html+='<div id="cd-history-'+i+'">';
+  html+=relK.slice(-20).reverse().map(function(k){
+    return'<div class="list-item">'+
+      '<div class="list-icon" style="background:var(--blue-bg)">🏰</div>'+
+      '<div class="list-body"><div class="list-title">'+fmtDate(k.dateRaw)+'</div><div class="list-sub">'+k.id.slice(0,8)+'</div></div>'+
+      '<div style="text-align:left"><div style="font-size:13px;font-weight:700;color:var(--accent2)">'+(k.total?"₪"+k.total.toLocaleString():"—")+'</div>'+
+      '<span class="badge '+(k.paid?"badge-green":"badge-red")+'">'+(k.paid?"שולם":"חוב")+'</span></div></div>';
+  }).join("");
+  html+='</div>';
+  document.getElementById("client-detail-content").innerHTML=html;
+  goTo("screen-client-detail",c.name);
+}
+function filterClientHistory(i){
+  var c=clients[i];
+  var relK=allKlitot.filter(function(k){return k.clientId===c.id;});
+  var relJ=journal.filter(function(j){return j.clientId===c.id;});
+  var fr=document.getElementById("cd-from-"+i);var to=document.getElementById("cd-to-"+i);
+  var st=document.getElementById("cd-step-"+i);
+  var frV=fr?fr.value:"",toV=to?to.value:"",stV=st?st.value:"";
+  var filtJ=relJ.filter(function(j){
+    if(frV&&serialToYMD(j.time)<frV)return false;
+    if(toV&&serialToYMD(j.time)>toV)return false;
+    if(stV&&j.step!==stV)return false;
+    return true;
+  });
+  // קבץ לפי קליטה
+  var kSet={};filtJ.forEach(function(j){if(j.klitaId)kSet[j.klitaId]=true;});
+  var filtK=stV?relK.filter(function(k){return kSet[k.id];}):relK.filter(function(k){
+    if(frV&&serialToYMD(k.dateRaw)<frV)return false;
+    if(toV&&serialToYMD(k.dateRaw)>toV)return false;
+    return true;
+  });
+  var html=filtK.length?filtK.reverse().map(function(k){
+    return'<div class="list-item">'+
+      '<div class="list-icon" style="background:var(--blue-bg)">🏰</div>'+
+      '<div class="list-body"><div class="list-title">'+fmtDate(k.dateRaw)+'</div><div class="list-sub">'+k.id.slice(0,8)+'</div></div>'+
+      '<div style="text-align:left"><div style="font-size:13px;font-weight:700;color:var(--accent2)">'+(k.total?"₪"+k.total.toLocaleString():"—")+'</div>'+
+      '<span class="badge '+(k.paid?"badge-green":"badge-red")+'">'+(k.paid?"שולם":"חוב")+'</span></div></div>';
+  }).join(""):'<div class="result-empty">אין תוצאות לסינון שנבחר</div>';
+  document.getElementById("cd-history-"+i).innerHTML=html;
+}
+
+// ═══════════════════════════════════════════════
+// MACHINES
+// ═══════════════════════════════════════════════
+function getMachineIcon(id){
+  var prefix=String(id||"").charAt(0).toUpperCase();
+  if(prefix==="M")return"🫧";   // כביסה
+  if(prefix==="B")return"💨";   // ייבוש / בלאר
+  if(prefix==="G")return"🔥";   // גיהוץ / מעגלה
+  if(prefix==="L")return"⚖️";  // שקילה / משקל
+  if(prefix==="A")return"📦";   // אריזה
+  return"⚙️";                   // ברירת מחדל
+}
+function renderMachines(){
+  // חשב אילו מכונות בשימוש לפי היומן — הרשומה האחרונה של כל עגלה
+  var busyMachines={};
+  var cartLastMap={};
+  journal.forEach(function(j){
+    var cid=String(j.cart);
+    if(!cartLastMap[cid]||excelToDate(j.time)>excelToDate(cartLastMap[cid].time))cartLastMap[cid]=j;
+  });
+  var nowMs=Date.now();
+  Object.values(cartLastMap).forEach(function(j){
+    if(j.step!=="נמסר ללקוח"&&j.step!=="מוכן לאיסוף"&&j.machine&&isStepActive(j,nowMs))
+      busyMachines[String(j.machine)]=true;
+  });
+
+  var ok=machines.filter(function(m){return m.status!=="תקול"&&!busyMachines[m.id];}).length;
+  document.getElementById("mc-ok").textContent=ok;
+  document.getElementById("mc-broken").textContent=machines.filter(function(m){return m.status==="תקול";}).length;
+  document.getElementById("mc-total").textContent=machines.length;
+  var broken=machines.filter(function(m){return m.status==="תקול";});
+  document.getElementById("machine-broken-alerts").innerHTML=broken.map(function(m){
+    return'<div class="alert-strip alert-warn"><span class="alert-icon">⚠️</span>מכונה '+m.id+' ('+m.type.trim()+') — תקולה. הנתונים נרשמים כרגיל.</div>';
+  }).join("");
+  var mk=function(m){
+    var isBroken=m.status==="תקול";
+    var isBusy=!isBroken&&busyMachines[m.id];
+    var cls=isBroken?"broken":isBusy?"busy":"ok";
+    var statusTxt=isBroken?"תקול":isBusy?"בשימוש":"פנויה";
+    var icon=getMachineIcon(m.id);
+    return'<div class="machine-box '+cls+'">'+
+      '<div style="font-size:20px;margin-bottom:4px">'+icon+'</div>'+
+      '<div class="machine-id">'+m.id+'</div>'+
+      '<div class="machine-type">'+m.type.trim()+'</div>'+
+      '<div class="machine-status">'+statusTxt+'</div>'+
+      (isBroken?'<div class="machine-broken-badge">⛔ תקול</div>':'')+
+      '</div>';
+  };
+  document.getElementById("washing-machines").innerHTML=machines.filter(function(m){return m.type.trim()==="כביסה";}).map(mk).join("")||'<div style="color:var(--text3);font-size:12px;padding:8px">אין נתונים</div>';
+  document.getElementById("other-machines").innerHTML=machines.filter(function(m){return m.type.trim()!=="כביסה";}).map(mk).join("")||'<div style="color:var(--text3);font-size:12px;padding:8px">אין נתונים</div>';
+}
+
+// ═══════════════════════════════════════════════
+// JOURNAL
+// ═══════════════════════════════════════════════
+function renderJournal(){
+  var now=new Date(),nowMs=now.getTime();
+  var startOfWeek=new Date(now);startOfWeek.setHours(0,0,0,0);startOfWeek.setDate(now.getDate()-now.getDay());
+  var startOfMonth=new Date(now.getFullYear(),now.getMonth(),1);
+  document.getElementById("journal-count").textContent=journal.length+" רשומות";
+  document.getElementById("journal-list").innerHTML=journal.slice(-80).reverse().map(function(j){
+    var c=clients.find(function(x){return x.id===j.clientId;}),icon=stepIcons[j.step]||"📌",bg=stepColors[j.step]||"var(--bg3)";
+    var machObj=machines.find(function(m){return m.id===String(j.machine||"");});
+    var warn=machObj&&machObj.status==="תקול"?' <span style="color:var(--yellow);font-size:9px">⚠ תקול</span>':"";
+    var jd=excelToDate(j.time);
+    var ageCls=isToday(j.time)?"journal-today":jd>=startOfWeek?"journal-week":jd>=startOfMonth?"journal-month":"";
+    return'<div class="journal-item '+ageCls+'" style="cursor:pointer" onclick="showCartDetail(\''+j.cart+'\')">'+
+      '<div class="step-dot" style="background:'+bg+'">'+icon+'</div>'+
+      '<div style="flex:1"><div style="font-size:13px;font-weight:600">'+j.step+(j.machine?" — "+j.machine:"")+warn+'</div>'+
+      '<div style="font-size:10px;color:var(--text2);margin-top:2px">'+(c?c.name:"—")+' · עגלה '+j.cart+' · '+fmtDateTime(j.time)+'</div></div>'+
+      (j.weight?'<div style="font-size:12px;font-weight:700;color:var(--accent2)">'+j.weight+'ק"ג</div>':"")+
+      '</div>';
+  }).join("");
+}
+
+// ═══════════════════════════════════════════════
+// CARTS
+// ═══════════════════════════════════════════════
+function renderCarts(){
+  document.getElementById("carts-grid").innerHTML=carts.map(function(c){
+    var free=String(c.status||"").indexOf("פנו")!==-1;
+    return'<div class="machine-box '+(free?"ok":"broken")+'" style="padding:14px;text-align:center;cursor:pointer" onclick="showCartDetail(\''+c.id+'\')">'+
+      '<div style="font-size:24px;margin-bottom:6px">🛒</div>'+
+      '<div class="machine-id">'+c.id+'</div>'+
+      '<div class="machine-status">'+c.status+'</div></div>';
+  }).join("")||'<div style="color:var(--text3);font-size:12px;grid-column:1/-1;padding:8px">אין נתוני עגלות</div>';
+}
+
+function showCartDetail(cartId){
+  goTo('screen-cart-detail','עגלה '+cartId);
+  var nowMs=Date.now();
+  var cartJ=journal.filter(function(j){return String(j.cart)===String(cartId);}).slice().sort(function(a,b){return excelToDate(b.time)-excelToDate(a.time);});
+  var last=cartJ[0];
+  var clientName="—";
+  if(last){var cl=clients.find(function(x){return x.id===last.clientId;});if(cl)clientName=cl.name;}
+  var currentStep=last?last.step:"—";
+  var currentMachine=last&&last.machine?last.machine:"—";
+  var lastTime=last?fmtDateTime(last.time):"—";
+  var active=last&&isStepActive(last,nowMs);
+  var html='<div class="card">'+
+    '<div class="card-title">🛒 עגלה '+cartId+'</div>'+
+    '<div class="detail-row"><div class="detail-key">לקוח</div><div class="detail-val">'+clientName+'</div></div>'+
+    '<div class="detail-row"><div class="detail-key">שלב נוכחי</div><div class="detail-val">'+currentStep+'</div></div>'+
+    '<div class="detail-row"><div class="detail-key">מכונה</div><div class="detail-val">'+currentMachine+'</div></div>'+
+    '<div class="detail-row"><div class="detail-key">עדכון אחרון</div><div class="detail-val">'+lastTime+'</div></div>'+
+    '<div class="detail-row"><div class="detail-key">סטטוס</div><div class="detail-val"><span class="badge '+(active?"badge-yellow":"badge-green")+'">'+(active?"פעיל":"סגור")+'</span></div></div>'+
+    '</div>'+
+    '<div class="section-hdr"><div class="section-title">היסטוריית פעולות</div><div class="section-count">'+cartJ.length+' רשומות</div></div>'+
+    cartJ.map(function(j){
+      var cl=clients.find(function(x){return x.id===j.clientId;}),icon=stepIcons[j.step]||"📌",bg=stepColors[j.step]||"var(--bg3)";
+      return'<div class="journal-item">'+
+        '<div class="step-dot" style="background:'+bg+'">'+icon+'</div>'+
+        '<div style="flex:1"><div style="font-size:13px;font-weight:600">'+j.step+(j.machine?" — "+j.machine:"")+'</div>'+
+        '<div style="font-size:10px;color:var(--text2);margin-top:2px">'+(cl?cl.name:"—")+' · '+fmtDateTime(j.time)+(j.worker?" · "+j.worker:"")+'</div></div>'+
+        (j.weight?'<div style="font-size:12px;font-weight:700;color:var(--accent2)">'+j.weight+'ק"ג</div>':"")+
+        '</div>';
+    }).join("")||'<div class="result-empty">אין רשומות</div>';
+  document.getElementById("cart-detail-content").innerHTML=html;
+}
+
+// ═══════════════════════════════════════════════
+// WORKERS
+// ═══════════════════════════════════════════════
+function clearWorkerDates(){
+  document.getElementById("wk-date-from").value="";
+  document.getElementById("wk-date-to").value="";
+  renderWorkers();
+}
+function renderWorkers(){
+  var fromInput=document.getElementById("wk-date-from");
+  var toInput=document.getElementById("wk-date-to");
+  var fromMs=fromInput&&fromInput.value?new Date(fromInput.value).getTime():null;
+  var toMs=toInput&&toInput.value?new Date(toInput.value+"T23:59:59").getTime():null;
+  var isInPeriod=function(t){
+    var ms=excelToDate(t).getTime();
+    if(fromMs&&ms<fromMs)return false;
+    if(toMs&&ms>toMs)return false;
+    return true;
+  };
+  var wm={};
+  journal.forEach(function(j){
+    var w=j.worker||"לא מוגדר";
+    if(!wm[w])wm[w]={name:w,ops:0,weight:0,amount:0,steps:{},days:{},periodOps:0,periodKg:0,lastDate:0};
+    wm[w].ops++;wm[w].weight+=(j.weight||0);wm[w].amount+=(j.amount||0);
+    wm[w].steps[j.step]=(wm[w].steps[j.step]||0)+1;
+    var d=serialToYMD(j.time);if(d)wm[w].days[d]=true;
+    if(isInPeriod(j.time)){wm[w].periodOps++;wm[w].periodKg+=(j.weight||0);}
+    if(j.time>wm[w].lastDate)wm[w].lastDate=j.time;
+  });
+  var list=Object.values(wm);
+  var activeInPeriod=list.filter(function(w){return w.periodOps>0;}).length;
+  document.getElementById("workers-count").textContent=list.length+" עובדים";
+  document.getElementById("wk-count").textContent=list.length;
+  document.getElementById("wk-active").textContent=activeInPeriod;
+  document.getElementById("wk-ops").textContent=list.reduce(function(s,w){return s+w.periodOps;},0);
+  document.getElementById("wk-kg").textContent=Math.round(list.reduce(function(s,w){return s+w.periodKg;},0)).toLocaleString();
+  document.getElementById("workers-list").innerHTML=list.map(function(w){
+    var days=Object.keys(w.days).length;
+    var topStep=Object.entries(w.steps).sort(function(a,b){return b[1]-a[1];})[0];
+    var topStepName=topStep?topStep[0]:"—";
+    var topStepIcon=topStep?(stepIcons[topStep[0]]||""):"";
+    var pills=Object.entries(w.steps).slice(0,4).map(function(e){return'<span class="worker-step-pill">'+(stepIcons[e[0]]||"")+e[0]+' ('+e[1]+')</span>';}).join("");
+    return'<div class="worker-card" style="cursor:pointer" onclick="showWorkerDetail(\''+w.name+'\')">'+ 
+      '<div class="worker-header"><div class="worker-avatar">👷</div>'+
+      '<div><div class="worker-name">'+w.name+'</div><div class="worker-role">עדכון: '+fmtDate(w.lastDate)+'</div></div></div>'+
+      '<div class="worker-stats">'+
+        '<div class="worker-stat"><div class="worker-stat-num">'+w.ops+'</div><div class="worker-stat-lbl">פעולות כולל</div></div>'+
+        '<div class="worker-stat"><div class="worker-stat-num">'+days+'</div><div class="worker-stat-lbl">ימי פעילות</div></div>'+
+        '<div class="worker-stat"><div class="worker-stat-num">'+Math.round(w.weight)+'</div><div class="worker-stat-lbl">ק"ג כולל</div></div>'+
+        '<div class="worker-stat"><div class="worker-stat-num" style="color:var(--yellow)">'+w.periodOps+'</div><div class="worker-stat-lbl">פעולות בתקופה</div></div>'+
+        '<div class="worker-stat"><div class="worker-stat-num" style="color:var(--green)">'+Math.round(w.periodKg)+'</div><div class="worker-stat-lbl">ק"ג בתקופה</div></div>'+
+        '<div class="worker-stat"><div class="worker-stat-num" style="color:var(--purple);font-size:11px">'+topStepIcon+' '+topStepName+'</div><div class="worker-stat-lbl">שלב מוביל</div></div>'+
+      '</div><div>'+pills+'</div></div>';
+  }).join("")||'<div class="result-empty">אין נתוני עובדים עדיין</div>';
+}
+
+// ═══════════════════════════════════════════════
+// WORKER DETAIL
+// ═══════════════════════════════════════════════
+function showWorkerDetail(name){
+  goTo('screen-worker-detail', name);
+  // Set default date range: last 7 days
+  var today=new Date();
+  var from=new Date();from.setDate(today.getDate()-6);
+  var toISO=today.toISOString().slice(0,10);
+  var fromISO=from.toISOString().slice(0,10);
+
+  var wj=journal.filter(function(j){return j.worker===name;});
+  var totalOps=wj.length;
+  var totalKg=wj.reduce(function(s,j){return s+(j.weight||0);},0);
+  var days=Object.keys(wj.reduce(function(m,j){var d=serialToYMD(j.time);if(d)m[d]=true;return m;},{})).length;
+
+  var stepOptions=['כביסה','ייבוש','גיהוץ','אריזה','שקילה'].map(function(s){
+    return'<option value="'+s+'">'+s+'</option>';
+  }).join('');
+
+  var html=
+    '<div class="card">'+
+      '<div class="card-title">👷 '+name+'</div>'+
+      '<div class="stat-row" style="grid-template-columns:repeat(3,1fr)">'+
+        '<div class="stat-box"><div class="stat-num">'+totalOps+'</div><div class="stat-lbl">סה"כ פעולות</div></div>'+
+        '<div class="stat-box"><div class="stat-num">'+Math.round(totalKg)+'</div><div class="stat-lbl">סה"כ ק"ג</div></div>'+
+        '<div class="stat-box"><div class="stat-num">'+days+'</div><div class="stat-lbl">ימי פעילות</div></div>'+
+      '</div>'+
+    '</div>'+
+    '<div class="card">'+
+      '<div class="card-title">🔍 סינון</div>'+
+      '<div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;">'+
+        '<div style="display:flex;flex-direction:column;gap:3px;flex:1;min-width:110px"><label style="font-size:10px;color:var(--text3)">מתאריך</label><input type="date" id="wd-from" value="'+fromISO+'" style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:6px 8px;font-size:12px;color:var(--text);font-family:Heebo,sans-serif"></div>'+
+        '<div style="display:flex;flex-direction:column;gap:3px;flex:1;min-width:110px"><label style="font-size:10px;color:var(--text3)">עד תאריך</label><input type="date" id="wd-to" value="'+toISO+'" style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:6px 8px;font-size:12px;color:var(--text);font-family:Heebo,sans-serif"></div>'+
+        '<div style="display:flex;flex-direction:column;gap:3px;flex:1;min-width:100px"><label style="font-size:10px;color:var(--text3)">סוג פעולה</label><select id="wd-step" style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:6px 8px;font-size:12px;color:var(--text);font-family:Heebo,sans-serif"><option value="">הכל</option>'+stepOptions+'</select></div>'+
+        '<button class="run-btn" style="padding:8px 16px;width:auto;align-self:flex-end" onclick="filterWorkerDetail(\''+name+'\')">הצג ←</button>'+
+      '</div>'+
+    '</div>'+
+    '<div class="card" style="padding:14px">'+
+      '<div class="card-title">📊 פעולות - 7 ימים אחרונים</div>'+
+      '<canvas id="worker-chart" style="width:100%;display:block"></canvas>'+
+    '</div>'+
+    '<div id="wd-list"></div>'+
+    '<div class="card">'+
+      '<div class="card-title">🕐 נוכחות</div>'+
+      '<div class="result-empty">נתוני נוכחות יתווספו בהמשך</div>'+
+      '<!-- טבלת placeholder: תאריך | כניסה | יציאה | סה"כ שעות -->'+
+    '</div>';
+
+  document.getElementById('worker-detail-content').innerHTML=html;
+  buildWorkerChart(name);
+  filterWorkerDetail(name);
+}
+
+function buildWorkerChart(name){
+  var canvas=document.getElementById('worker-chart');if(!canvas)return;
+  var ctx=canvas.getContext('2d');
+  var days=[];
+  for(var i=6;i>=0;i--){
+    var d=new Date();d.setHours(5,0,0,0);d.setDate(d.getDate()-i);
+    var end=new Date(d);end.setDate(end.getDate()+1);end.setHours(4,59,59,999);
+    var lbl=d.toLocaleDateString('he-IL',{day:'2-digit',month:'2-digit'});
+    var count=journal.reduce(function(s,j){
+      var jd=excelToDate(j.time);
+      return s+(jd>=d&&jd<=end&&j.worker===name?1:0);
+    },0);
+    days.push({lbl:lbl,count:count});
+  }
+  var max=Math.max.apply(null,days.map(function(d){return d.count;}))||1;
+  var dpr=window.devicePixelRatio||1;
+  var W=canvas.offsetWidth||300,H=160;
+  canvas.width=W*dpr;canvas.height=H*dpr;
+  canvas.style.width=W+'px';canvas.style.height=H+'px';
+  ctx.scale(dpr,dpr);
+  ctx.clearRect(0,0,W,H);
+  var pad=30,gW=W-pad*2,gH=H-40;
+  ctx.strokeStyle='rgba(255,255,255,0.05)';ctx.lineWidth=1;
+  for(var g=0;g<=3;g++){var y=pad+gH-(gH*g/3);ctx.beginPath();ctx.moveTo(pad,y);ctx.lineTo(W-pad,y);ctx.stroke();}
+  var barW=gW/days.length*0.6,gap=gW/days.length;
+  days.forEach(function(d,i){
+    var x=pad+gap*i+gap*0.2,h=d.count?(d.count/max)*gH:0,yBar=pad+gH-h;
+    var gr=ctx.createLinearGradient(0,yBar,0,yBar+h);gr.addColorStop(0,'rgba(34,197,94,0.9)');gr.addColorStop(1,'rgba(34,197,94,0.3)');
+    ctx.fillStyle=gr;
+    ctx.beginPath();
+    if(ctx.roundRect)ctx.roundRect(x,yBar,barW,h,3);else ctx.rect(x,yBar,barW,h);
+    ctx.fill();
+    ctx.fillStyle='rgba(85,94,117,0.9)';ctx.font='9px Heebo,sans-serif';ctx.textAlign='center';
+    ctx.fillText(d.lbl,x+barW/2,H-6);
+    if(d.count){ctx.fillStyle='#22c55e';ctx.font='bold 9px Heebo,sans-serif';ctx.fillText(d.count,x+barW/2,yBar-4);}
+  });
+}
+
+function filterWorkerDetail(name){
+  var fromVal=document.getElementById('wd-from')&&document.getElementById('wd-from').value;
+  var toVal=document.getElementById('wd-to')&&document.getElementById('wd-to').value;
+  var stepVal=document.getElementById('wd-step')&&document.getElementById('wd-step').value;
+  var fromMs=fromVal?new Date(fromVal).getTime():null;
+  var toMs=toVal?new Date(toVal+'T23:59:59').getTime():null;
+  var filtered=journal.filter(function(j){
+    if(j.worker!==name)return false;
+    var ms=excelToDate(j.time).getTime();
+    if(fromMs&&ms<fromMs)return false;
+    if(toMs&&ms>toMs)return false;
+    if(stepVal&&j.step!==stepVal)return false;
+    return true;
+  });
+  filtered.sort(function(a,b){return excelToDate(b.time)-excelToDate(a.time);});
+  var listEl=document.getElementById('wd-list');if(!listEl)return;
+  if(!filtered.length){listEl.innerHTML='<div class="result-empty">אין פעולות בטווח הנבחר</div>';return;}
+  var html='<div class="section-hdr"><div class="section-title">פעולות</div><div class="section-count">'+filtered.length+'</div></div>';
+  filtered.forEach(function(j){
+    var icon=stepIcons[j.step]||'📌';
+    html+='<div class="journal-item" style="cursor:pointer" onclick="showCartDetail(\''+j.cart+'\')">'+
+      '<div style="width:36px;height:36px;border-radius:9px;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0">'+icon+'</div>'+
+      '<div style="flex:1;min-width:0">'+
+        '<div style="font-size:13px;font-weight:600">'+j.step+' · עגלה '+j.cart+'</div>'+
+        '<div style="font-size:11px;color:var(--text2);margin-top:2px">'+fmtDateTime(j.time)+(j.machine?' · '+j.machine:'')+(j.weight?' · '+Math.round(j.weight)+'ק"ג':'')+'</div>'+
+      '</div>'+
+    '</div>';
+  });
+  listEl.innerHTML=html;
+}
+
+// ═══════════════════════════════════════════════
+// CLIENT PORTAL
+// ═══════════════════════════════════════════════
+function loadClientPortal(){
+  var cid=Number(document.getElementById("portal-client-select").value);
+  if(!cid){document.getElementById("portal-content").innerHTML='<div class="result-empty">בחר לקוח</div>';return;}
+  var c=clients.find(function(x){return x.id===cid;});if(!c)return;
+  var relK=allKlitot.filter(function(k){return k.clientId===cid;});
+  var relJ=journal.filter(function(j){return j.clientId===cid;});
+  var activeK=relK.filter(function(k){return!k.delivered;});
+  var totalKg=relJ.reduce(function(s,j){return s+(j.weight||0);},0);
+  var monthKg=relJ.filter(function(j){return isThisMonth(j.time)&&j.weight;}).reduce(function(s,j){return s+(j.weight||0);},0);
+  var unpaid=relK.filter(function(k){return!k.paid&&k.total>0;}).reduce(function(s,k){return s+(k.total||0);},0);
+  var html='<div class="card"><div class="card-title">📊 סיכום — '+c.name+'</div>'+
+    '<div class="report-summary-grid">'+
+      '<div class="report-sum-box"><div class="report-sum-num">'+activeK.length+'</div><div class="report-sum-lbl">קליטות פעילות</div></div>'+
+      '<div class="report-sum-box"><div class="report-sum-num">'+Math.round(monthKg).toLocaleString()+'</div><div class="report-sum-lbl">ק"ג החודש</div></div>'+
+      '<div class="report-sum-box"><div class="report-sum-num">'+Math.round(totalKg).toLocaleString()+'</div><div class="report-sum-lbl">ק"ג סה"כ</div></div>'+
+      '<div class="report-sum-box" style="border:1px solid rgba(239,68,68,0.3)"><div class="report-sum-num" style="color:var(--red)">₪'+Math.round(unpaid).toLocaleString()+'</div><div class="report-sum-lbl">חוב פתוח</div></div>'+
+    '</div></div>';
+  if(activeK.length){
+    html+='<div class="section-hdr"><div class="section-title">קליטות פעילות</div></div>';
+    var NOW=Date.now();
+
+    activeK.forEach(function(k){
+      var kJ=relJ.filter(function(j){return j.klitaId===k.id;});
+      // מיין לפי זמן
+      kJ=kJ.slice().sort(function(a,b){return excelToDate(a.time)-excelToDate(b.time);});
+
+      // ── עגלות ושלב נוכחי לכל עגלה ──
+      var cartMap={};
+      kJ.forEach(function(j){
+        var cid=String(j.cart||"ללא עגלה");
+        if(!cartMap[cid])cartMap[cid]=[];
+        cartMap[cid].push(j);
+      });
+      var cartIds=Object.keys(cartMap).filter(function(c){return c&&c!=="0"&&c!=="ללא עגלה";});
+
+      // ── מכונות פעילות עכשיו (לפי timeout לפי שלב) ──
+      var machineLastAction={};
+      kJ.forEach(function(j){
+        if(!j.machine)return;
+        var t=excelToDate(j.time);
+        if(!machineLastAction[j.machine]||t>machineLastAction[j.machine].time)
+          machineLastAction[j.machine]={time:t.getTime(),step:j.step,cart:String(j.cart||"")};
+      });
+      var activeMachines=[];
+      Object.keys(machineLastAction).forEach(function(mid){
+        var mla=machineLastAction[mid];
+        var timeout=STEP_TIMEOUTS_MS[mla.step]!==undefined?STEP_TIMEOUTS_MS[mla.step]:DEFAULT_TIMEOUT_MS;
+        if(NOW-mla.time<timeout)
+          activeMachines.push({id:mid,step:mla.step,cart:mla.cart});
+      });
+      // מיין לפי שלב (לפי סדר stepOrder)
+      activeMachines.sort(function(a,b){return stepOrder.indexOf(a.step)-stepOrder.indexOf(b.step);});
+
+      // ── שלבים שהושלמו בקליטה ──
+      var doneSet={};
+      kJ.forEach(function(j){if(j.step)doneSet[j.step]=true;});
+      var activeStepSet={};
+      activeMachines.forEach(function(m){if(m.step)activeStepSet[m.step]=true;});
+
+      var totalW=kJ.reduce(function(s,j){return s+(j.weight||0);},0);
+
+      html+='<div class="portal-order-card">';
+
+      // כותרת
+      html+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">'+
+        '<div style="font-size:11px;color:var(--text3)">מזהה: '+k.id.slice(0,8)+
+          (cartIds.length?' · <span style="color:var(--text2)">'+cartIds.length+' עגלות</span>':'')+
+        '</div>'+
+        '<div style="display:flex;gap:6px;align-items:center">'+
+          (activeMachines.length?
+            '<span style="background:rgba(34,197,94,0.12);border:1px solid rgba(34,197,94,0.25);border-radius:20px;padding:2px 9px;font-size:10px;font-weight:700;color:var(--green);display:flex;align-items:center;gap:4px">'+
+            '<span style="width:6px;height:6px;border-radius:50%;background:var(--green);display:inline-block;animation:pulse 1.5s infinite"></span>'+
+            activeMachines.length+' פעילות</span>':'')+
+          '<span class="badge badge-'+(k.status==="פתוחה"||k.status==="בתהליך"?"yellow":"blue")+'">'+k.status+'</span>'+
+        '</div>'+
+      '</div>';
+
+      // progress שלבים
+      var stepsHtml=stepOrder.slice(0,7).map(function(s){
+        var isActive=activeStepSet[s],isDone=doneSet[s]&&!isActive;
+        return '<div class="step'+(isActive?" current":isDone?" done":"")+'">'+(stepIcons[s]||"")+" "+s+'</div>';
+      }).join("");
+      html+='<div class="steps" style="margin-bottom:10px">'+stepsHtml+'</div>';
+
+      // בלוק מכונות פעילות עכשיו
+      if(activeMachines.length){
+        html+='<div style="background:rgba(34,197,94,0.06);border:1px solid rgba(34,197,94,0.18);border-radius:10px;padding:10px;margin-bottom:10px;">';
+        html+='<div style="font-size:10px;color:var(--text3);margin-bottom:7px;font-weight:700">⚡ פעיל עכשיו</div>';
+        html+='<div style="display:flex;flex-wrap:wrap;gap:5px;">';
+        activeMachines.forEach(function(m){
+          html+='<div style="background:var(--bg3);border:1px solid rgba(34,197,94,0.3);border-radius:8px;padding:4px 10px;font-size:10px;">'+
+            '<span style="color:var(--green);font-weight:700">'+m.id+'</span>'+
+            ' <span style="color:var(--text3)">'+( stepIcons[m.step]||"")+" "+m.step+'</span>'+
+            (m.cart&&m.cart!=="0"?' <span style="color:var(--text3);font-size:9px">עגלה '+m.cart+'</span>':'')+
+          '</div>';
+        });
+        html+='</div></div>';
+      }
+
+      // עגלות — שלב נוכחי לכל עגלה
+      if(cartIds.length>1){
+        html+='<div style="margin-bottom:10px;">';
+        html+='<div style="font-size:10px;color:var(--text3);margin-bottom:6px;font-weight:700">🛒 עגלות</div>';
+        html+='<div style="display:flex;flex-direction:column;gap:4px;">';
+        cartIds.forEach(function(cartId){
+          var cj=cartMap[cartId].slice().sort(function(a,b){return excelToDate(a.time)-excelToDate(b.time);});
+          var lastJ=cj[cj.length-1];
+          var isNowActive=isStepActive(lastJ,NOW);
+          html+='<div style="display:flex;align-items:center;gap:8px;background:var(--bg3);border-radius:8px;padding:5px 10px;">'+
+            '<span style="font-size:10px;font-weight:700;color:var(--text2)">עגלה '+cartId+'</span>'+
+            '<span style="font-size:10px;color:'+(isNowActive?"var(--green)":"var(--text2)")+'">'+
+              (stepIcons[lastJ.step]||"")+" "+lastJ.step+
+            '</span>'+
+            (lastJ.machine?'<span style="font-size:9px;color:var(--text3);margin-right:auto">'+lastJ.machine+'</span>':'')+
+            (isNowActive?'<span style="width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 1.5s infinite;flex-shrink:0"></span>':'')+
+          '</div>';
+        });
+        html+='</div></div>';
+      } else if(cartIds.length===1){
+        var cj=cartMap[cartIds[0]].slice().sort(function(a,b){return excelToDate(a.time)-excelToDate(b.time);});
+        var lastJ=cj[cj.length-1];
+        html+='<div class="detail-row"><div class="detail-key">שלב נוכחי</div>'+
+          '<div class="detail-val">'+(stepIcons[lastJ.step]||"")+" "+lastJ.step+
+          (lastJ.machine?' <span style="font-size:10px;color:var(--text3)">'+lastJ.machine+'</span>':'')+
+          '</div></div>';
+      }
+
+      // סיכום
+      html+='<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:8px;">';
+      html+='<div style="background:var(--bg3);border-radius:8px;padding:7px;text-align:center;">'+
+        '<div style="font-size:14px;font-weight:900;color:var(--accent2)">'+Object.keys(machineLastAction).length+'</div>'+
+        '<div style="font-size:9px;color:var(--text3)">מכונות בקליטה</div></div>';
+      html+='<div style="background:var(--bg3);border-radius:8px;padding:7px;text-align:center;">'+
+        '<div style="font-size:14px;font-weight:900;color:var(--text)">'+(totalW?Math.round(totalW)+' ק"ג':"—")+'</div>'+
+        '<div style="font-size:9px;color:var(--text3)">משקל</div></div>';
+      html+='<div style="background:var(--bg3);border-radius:8px;padding:7px;text-align:center;">'+
+        '<div style="font-size:14px;font-weight:900;color:var(--accent2)">'+(k.total?"₪"+k.total.toLocaleString():"—")+'</div>'+
+        '<div style="font-size:9px;color:var(--text3)">חיוב</div></div>';
+      html+='</div>';
+
+      html+='</div>'; // portal-order-card
+    });
+  }
+  document.getElementById("portal-content").innerHTML=html;
+}
+
+// ═══════════════════════════════════════════════
+// PAYMENT DETAIL
+// ═══════════════════════════════════════════════
+function showPaymentDetail(type){
+  var el=document.getElementById("payment-detail");
+  var list=allKlitot.filter(function(k){return type==="paid"?k.paid&&k.total>0:!k.paid&&k.total>0;});
+  if(!list.length){el.innerHTML='<div class="card"><div class="result-empty">'+(type==="paid"?"אין קליטות ששולמו":"אין חובות פתוחים")+'</div></div>';el.style.display="block";return;}
+  var total=list.reduce(function(s,k){return s+(k.total||0);},0);
+  var color=type==="paid"?"var(--green)":"var(--red)";
+  var html='<div class="card"><div class="card-title">'+(type==="paid"?"✓ קליטות ששולמו":"⚠ חובות פתוחים")+'</div>'+
+    '<div style="font-size:18px;font-weight:900;color:'+color+';margin-bottom:12px">₪'+Math.round(total).toLocaleString()+' סה"כ</div>';
+  list.forEach(function(k){
+    var c=clients.find(function(x){return x.id===k.clientId;})||{name:"—"};
+    html+='<div class="detail-row"><div class="detail-key">'+c.name+'<div style="font-size:9px;color:var(--text3)">'+fmtDate(k.dateRaw)+'</div></div>'+
+      '<div class="detail-val" style="color:'+color+'">₪'+Math.round(k.total).toLocaleString()+'</div></div>';
+  });
+  html+='</div>';
+  el.innerHTML=html;el.style.display="block";el.scrollIntoView({behavior:"smooth"});
+}
+
+// ═══════════════════════════════════════════════
+// REPORTS
+// ═══════════════════════════════════════════════
+var currentTab="utilization";
+function setTab(tab,el){
+  currentTab=tab;
+  document.querySelectorAll(".rtab").forEach(function(t){t.classList.remove("active");});
+  el.classList.add("active");
+  document.getElementById("results-area").innerHTML='<div class="result-empty">בחר קריטריון והפק דוח</div>';
+  document.getElementById("print-btn-area").style.display="none";
+  if(tab==="expenses"){
+    document.getElementById("filter-fields").innerHTML="";
+    document.getElementById("results-area").innerHTML='<div class="result-empty">טוען הוצאות...</div>';
+    loadExpenses();
+    return;
+  }
+  if(tab==="utilization"){
+    buildUtilizationFilters();
+    return;
+  }
+  buildFilters(tab);
+}
+
+function loadExpenses(){
+  if(!EXPENSES_SHEET_ID){
+    document.getElementById("results-area").innerHTML=
+      '<div class="card"><div style="text-align:center;padding:20px;color:var(--text3)">'+
+      '<div style="font-size:24px;margin-bottom:10px">⚙️</div>'+
+      '<div style="font-size:13px;font-weight:600;margin-bottom:8px">נדרש חיבור לגיליון הוצאות</div>'+
+      '<div style="font-size:11px;color:var(--text3)">פנה למנהל המערכת להוספת מזהה הגיליון</div>'+
+      '</div></div>';
+    return;
+  }
+  var base="https://docs.google.com/spreadsheets/d/"+EXPENSES_SHEET_ID+"/gviz/tq?tqx=out:json&sheet=";
+  var loaded=0,results={};
+  function done(){
+    var rawExp=results["הוצאות"]||[];
+    var rawCash=results["הוצאות קופה"]||[];
+    var rawIncome=results["הכנסות קופה"]||[];
+    expenses=rawExp.map(function(r){
+      return{date:r["תאריך"]||"",amount:Number(r["סכום"])||0,business:r["בית העסק"]||"",detail:r["פירוט"]||"",method:r["אמצעי תשלום"]||"",raw:r};
+    }).filter(function(e){return e.amount>0;});
+    expensesCash=rawCash.map(function(r){
+      return{date:r["תאריך"]||"",amount:Number(r["סכום"])||0,business:r["בית העסק"]||"",detail:r["פירוט"]||"",raw:r};
+    }).filter(function(e){return e.amount>0;});
+    expensesIncome=rawIncome.map(function(r){
+      return{date:r["תאריך"]||"",amount:Number(r["סכום"])||0,from:r["התקבל מ:"]||"",raw:r};
+    }).filter(function(e){return e.amount>0;});
+    renderExpenses();
+  }
+  ["הוצאות","הוצאות קופה","הכנסות קופה"].forEach(function(sheet){
+    var xhr=new XMLHttpRequest();
+    xhr.open("GET",base+encodeURIComponent(sheet),true);
+    xhr.onload=function(){
+      try{results[sheet]=xhr.status===200?parseSheet(xhr.responseText):[];}catch(e){results[sheet]=[];}
+      if(++loaded===3)done();
+    };
+    xhr.onerror=function(){results[sheet]=[];if(++loaded===3)done();};
+    xhr.send();
+  });
+}
+
+function renderExpenses(){
+  var totalExp=expenses.reduce(function(s,e){return s+e.amount;},0);
+  var totalCashOut=expensesCash.reduce(function(s,e){return s+e.amount;},0);
+  var totalCashIn=expensesIncome.reduce(function(s,e){return s+e.amount;},0);
+  var cashBalance=totalCashIn-totalCashOut;
+
+  var html='<div class="result-summary">';
+  html+='<div class="rs-box"><div class="rs-num" style="color:var(--red)">₪'+Math.round(totalExp).toLocaleString()+'</div><div class="rs-lbl">הוצאות רגילות</div></div>';
+  html+='<div class="rs-box"><div class="rs-num" style="color:var(--green)">₪'+Math.round(totalCashIn).toLocaleString()+'</div><div class="rs-lbl">הכנסות קופה קטנה</div></div>';
+  html+='<div class="rs-box"><div class="rs-num" style="color:var(--yellow)">₪'+Math.round(totalCashOut).toLocaleString()+'</div><div class="rs-lbl">הוצאות קופה קטנה</div></div>';
+  html+='<div class="rs-box" style="border:1px solid rgba(34,197,94,0.3)"><div class="rs-num" style="color:'+(cashBalance>=0?"var(--green)":"var(--red)")+'">₪'+Math.round(Math.abs(cashBalance)).toLocaleString()+'</div><div class="rs-lbl">יתרת קופה קטנה '+(cashBalance>=0?"✓":"⚠")+'</div></div>';
+  html+='</div>';
+
+  // הכנסות קופה קטנה
+  html+='<div class="card"><div class="card-title">💵 הכנסות קופה קטנה</div>';
+  expensesIncome.slice().reverse().forEach(function(e){
+    html+='<div class="detail-row">'+
+      '<div class="detail-key">'+e.from+'<div style="font-size:9px;color:var(--text3)">'+e.date+'</div></div>'+
+      '<div style="font-size:13px;font-weight:700;color:var(--green)">₪'+e.amount.toLocaleString()+'</div></div>';
+  });
+  if(!expensesIncome.length)html+='<div class="result-empty">אין הכנסות קופה</div>';
+  html+='</div>';
+
+  // הוצאות קופה קטנה
+  html+='<div class="card"><div class="card-title">🏦 הוצאות קופה קטנה</div>';
+  expensesCash.slice().reverse().forEach(function(e){
+    html+='<div class="detail-row">'+
+      '<div class="detail-key">'+(e.business||e.detail||"—")+'<div style="font-size:9px;color:var(--text3)">'+e.date+'</div></div>'+
+      '<div style="font-size:13px;font-weight:700;color:var(--yellow)">₪'+e.amount.toLocaleString()+'</div></div>';
+  });
+  if(!expensesCash.length)html+='<div class="result-empty">אין הוצאות קופה</div>';
+  html+='</div>';
+
+  // הוצאות רגילות
+  html+='<div class="card"><div class="card-title">💳 הוצאות רגילות</div>';
+  var byBiz={};
+  expenses.forEach(function(e){byBiz[e.business]=(byBiz[e.business]||0)+e.amount;});
+  var bizEntries=Object.entries(byBiz).sort(function(a,b){return b[1]-a[1];});
+  bizEntries.forEach(function(e,idx){
+    var expandId="exp-biz-"+idx;
+    var relExp=expenses.filter(function(x){return x.business===e[0];});
+    html+='<div style="border-bottom:1px solid var(--border)">';
+    html+='<div style="display:flex;align-items:center;padding:11px 4px;cursor:pointer;gap:10px;" onclick="toggleExpand(\''+expandId+'\')">';
+    html+='<div style="flex:1"><div style="font-size:13px;font-weight:700">'+e[0]+'</div></div>';
+    html+='<div style="font-size:15px;font-weight:900;color:var(--red)">₪'+Math.round(e[1]).toLocaleString()+'</div>';
+    html+='<div style="color:var(--text3);font-size:12px" id="chev-'+expandId+'">▼</div>';
+    html+='</div>';
+    html+='<div id="'+expandId+'" style="display:none;padding:0 4px 10px 4px;">';
+    relExp.forEach(function(ex){
+      html+='<div class="hist-item"><div class="hist-dot" style="background:var(--red-bg)">💸</div>'+
+        '<div style="flex:1"><div style="font-size:12px;font-weight:600">'+ex.detail+'</div>'+
+        '<div style="font-size:10px;color:var(--text3)">'+ex.date+' · '+ex.method+'</div></div>'+
+        '<div style="font-size:12px;font-weight:700;color:var(--red)">₪'+ex.amount.toLocaleString()+'</div></div>';
+    });
+    html+='</div></div>';
+  });
+  if(!expenses.length)html+='<div class="result-empty">אין הוצאות</div>';
+  html+='</div>';
+
+  document.getElementById("results-area").innerHTML=html;
+  document.getElementById("filter-fields").innerHTML="";
+}
+function buildUtilizationFilters(){
+  var today=new Date().toISOString().slice(0,10);
+  var d3=new Date();d3.setDate(d3.getDate()-2);
+  var from3=d3.toISOString().slice(0,10);
+  document.getElementById("filter-fields").innerHTML=
+    '<div class="filter-group"><div class="filter-label">מתאריך</div><input type="date" class="filter-input" id="u-from" value="'+from3+'"></div>'+
+    '<div class="filter-group"><div class="filter-label">עד תאריך</div><input type="date" class="filter-input" id="u-to" value="'+today+'"></div>'+
+    '<div class="filter-group full" style="display:flex;align-items:center;gap:8px;margin-top:4px">'+
+    '<input type="checkbox" id="util-show-broken" onchange="runReport()" style="width:16px;height:16px;cursor:pointer">'+
+    '<label for="util-show-broken" style="font-size:12px;color:var(--text2);cursor:pointer">הצג גם מכונות תקולות</label></div>';
+  document.getElementById("results-area").innerHTML='<div class="result-empty">בחר תאריכים והפק דוח</div>';
+}
+
+function runUtilizationReport(){
+  // ═══════════════════════════════════════════════════════════════
+  // ניצולת מכונות — פוזיציה א' + פוזיציה ב'
+  // פוזיציה א': אחוז מוחלט — זמן פעיל / זמן יום עבודה (פחות 60 דק' הפסקה)
+  // פוזיציה ב': אחוז יחסי — כל מכונה ביחס למכונה המובילה ביום
+  // ═══════════════════════════════════════════════════════════════
+  var fr=gv("u-from"),to=gv("u-to");
+  if(!fr||!to){document.getElementById("results-area").innerHTML='<div class="result-empty">בחר תאריך התחלה וסיום</div>';return;}
+
+  // בנה רשימת ימים
+  function buildDaysLocal(fromStr,toStr){
+    var days=[],cur=new Date(fromStr+"T05:00:00"),end=new Date(toStr+"T05:00:00");
+    end.setDate(end.getDate()+1);
+    while(cur<end){
+      var s=new Date(cur),e=new Date(cur);e.setDate(e.getDate()+1);
+      days.push({label:s.toLocaleDateString("he-IL",{weekday:"short",day:"2-digit",month:"2-digit"}),start:s,end:e,iso:s.toISOString().slice(0,10)});
+      cur.setDate(cur.getDate()+1);
+    }
+    return days;
+  }
+  var days=buildDaysLocal(fr,to);
+  if(!days.length){document.getElementById("results-area").innerHTML='<div class="result-empty">טווח תאריכים לא תקין</div>';return;}
+
+  // מכונות רלוונטיות (ללא משקל, ללא תקולות כברירת מחדל)
+  var EXCLUDE_TYPES=["משקל"];
+  var showBroken=document.getElementById("util-show-broken")&&document.getElementById("util-show-broken").checked;
+  var allMachineIds=[];
+  machines.forEach(function(m){
+    if(EXCLUDE_TYPES.indexOf(m.type.trim())!==-1)return;
+    if(!showBroken&&m.status==="תקול")return;
+    allMachineIds.push(m.id);
+  });
+
+  // ── חישוב זמן פעיל ויום לכל מכונה לכל יום ──
+  var GAP_MS=40*60*1000;   // 40 דק' — רצף
+  var BREAK_MS=60*60*1000; // 60 דק' — הפסקת צהריים
+
+  function calcMachineDayMinutes(machineId, day){
+    var scans=journal
+      .filter(function(j){
+        if(String(j.machine)!==String(machineId))return false;
+        var d=excelToDate(j.time);
+        return d>=day.start&&d<day.end;
+      })
+      .map(function(j){return excelToDate(j.time).getTime();})
+      .sort(function(a,b){return a-b;});
+    if(!scans.length)return{active:0,dayDuration:0};
+    var activeMs=0,segStart=scans[0],segEnd=scans[0];
+    for(var k=1;k<scans.length;k++){
+      if(scans[k]-segEnd<=GAP_MS){
+        segEnd=scans[k];
+      } else {
+        activeMs+=segEnd-segStart;
+        segStart=scans[k];segEnd=scans[k];
+      }
+    }
+    activeMs+=segEnd-segStart;
+    var dayDuration=Math.max((scans[scans.length-1]-scans[0])-BREAK_MS, activeMs);
+    return{active:activeMs/60000,dayDuration:dayDuration/60000};
+  }
+
+  // בנה טבלת תוצאות: machineId → day index → {active, dayDuration, pctA}
+  var machineData={};
+  allMachineIds.forEach(function(mid){
+    machineData[mid]=days.map(function(day){
+      var r=calcMachineDayMinutes(mid,day);
+      var pctA=r.dayDuration>0?r.active/r.dayDuration*100:0;
+      return{active:r.active,dayDuration:r.dayDuration,pctA:pctA};
+    });
+  });
+
+  // פוזיציה ב': לכל יום — המכונה עם הכי הרבה דקות פעילות = 100%
+  var dayMaxActive=days.map(function(_,di){
+    var mx=0;
+    allMachineIds.forEach(function(mid){
+      if(machineData[mid][di].active>mx)mx=machineData[mid][di].active;
+    });
+    return mx;
+  });
+  // מי הובילה ביום
+  var dayLeader=days.map(function(_,di){
+    var mx=dayMaxActive[di];
+    if(!mx)return null;
+    var leader=null;
+    allMachineIds.forEach(function(mid){
+      if(machineData[mid][di].active===mx)leader=mid;
+    });
+    return leader;
+  });
+  // pctB לכל מכונה לכל יום
+  allMachineIds.forEach(function(mid){
+    days.forEach(function(_,di){
+      var mx=dayMaxActive[di];
+      machineData[mid][di].pctB=mx>0?machineData[mid][di].active/mx*100:0;
+    });
+  });
+
+  // ── מכונות לפי סוג (לאגרגציה אם הרבה מכונות) ──
+  var typeMap={};
+  machines.forEach(function(m){
+    var t=m.type.trim();
+    if(EXCLUDE_TYPES.indexOf(t)!==-1)return;
+    if(!typeMap[t])typeMap[t]=[];
+    typeMap[t].push(m.id);
+  });
+  var types=Object.keys(typeMap);
+
+  // ממוצע לפי סוג לכל יום (לגרפים)
+  function avgByType(field){
+    var result={};
+    types.forEach(function(t){
+      result[t]=days.map(function(_,di){
+        var vals=typeMap[t].map(function(mid){return machineData[mid][di][field];}).filter(function(v){return v>0||v===0;});
+        if(!vals.length)return 0;
+        return vals.reduce(function(s,v){return s+v;},0)/vals.length;
+      });
+    });
+    return result;
+  }
+  var typeAvgA=avgByType("pctA");
+  var typeAvgB=avgByType("pctB");
+
+  // ── ממוצע לכל מכונה לתקופה ──
+  function machinePeriodAvg(mid,field){
+    var vals=machineData[mid].filter(function(d){return d.dayDuration>0;}).map(function(d){return d[field];});
+    return vals.length?vals.reduce(function(s,v){return s+v;},0)/vals.length:0;
+  }
+
+  // ── צבעי עמודות לפי מכונה ──
+  var PALETTE=["rgba(96,165,250,","rgba(34,197,94,","rgba(245,158,11,","rgba(168,85,247,","rgba(6,182,212,","rgba(239,68,68,","rgba(251,191,36,","rgba(52,211,153,"];
+  function machineColor(idx,alpha){return PALETTE[idx%PALETTE.length]+alpha+")";}
+
+  var html="";
+
+  // ═══════════════════════════════════════════════
+  // חלק א' — גרף עמודות — פוזיציה א' (אחוז מוחלט)
+  // ═══════════════════════════════════════════════
+  html+='<div class="card"><div class="card-title">📊 ניצולת מוחלטת — זמן פעיל מתוך יום העבודה</div>';
+  html+='<div style="font-size:10px;color:var(--text3);margin-bottom:10px;">מכונה שעבדה גם בהפסקת הצהריים עשויה לקבל מעל 100% — זה תקין ומכוון</div>';
+  html+='<canvas id="util-chart-a" style="width:100%;max-height:220px;margin-bottom:12px;"></canvas>';
+  // טבלת ממוצע לכל מכונה
+  html+='<div style="font-size:9px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px;">ממוצע לתקופה לפי מכונה</div>';
+  html+='<div style="overflow-x:auto;">';
+  allMachineIds.forEach(function(mid,idx){
+    var avg=machinePeriodAvg(mid,"pctA");
+    var hasDays=machineData[mid].some(function(d){return d.dayDuration>0;});
+    if(!hasDays)return;
+    html+='<div class="bar-row">';
+    html+='<div class="bar-label-row">';
+    html+='<span class="bar-name">'+mid+'</span>';
+    html+='<span class="bar-val" style="color:'+machineColor(idx,"0.9")+'">'+Math.round(avg)+'%</span>';
+    html+='</div>';
+    var barW=Math.min(avg,100);
+    html+='<div class="bar-track" style="position:relative"><div class="bar-fill" style="width:'+barW+'%;background:'+machineColor(idx,"0.7")+'"></div>';
+    if(avg>100){html+='<div style="position:absolute;right:0;top:0;height:100%;width:2px;background:rgba(245,158,11,0.8);"></div>';}
+    html+='</div>';
+    html+='</div>';
+  });
+  html+='</div></div>';
+
+  // ═══════════════════════════════════════════════
+  // חלק ב' — גרף עמודות — פוזיציה ב' (אחוז יחסי)
+  // ═══════════════════════════════════════════════
+  html+='<div class="card"><div class="card-title">📊 ניצולת יחסית — השוואה בין מכונות</div>';
+  html+='<div style="font-size:10px;color:var(--text3);margin-bottom:10px;">המכונה הפעילה ביותר בכל יום מקבלת 100% — שאר המכונות ביחס אליה</div>';
+  html+='<canvas id="util-chart-b" style="width:100%;max-height:220px;margin-bottom:12px;"></canvas>';
+  // מי הובילה בכל יום
+  html+='<div style="font-size:9px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px;">מובילה יומית</div>';
+  html+='<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;">';
+  days.forEach(function(day,di){
+    var leader=dayLeader[di];
+    var hrs=leader?Math.round(dayMaxActive[di]/60*10)/10:0;
+    html+='<div style="background:var(--bg3);border-radius:8px;padding:5px 9px;text-align:center;">';
+    html+='<div style="font-size:9px;color:var(--text3)">'+day.label+'</div>';
+    html+='<div style="font-size:12px;font-weight:800;color:var(--accent2)">'+(leader||"—")+'</div>';
+    if(leader)html+='<div style="font-size:8px;color:var(--text3)">'+hrs+'ש\'</div>';
+    html+='</div>';
+  });
+  html+='</div>';
+  // טבלת ממוצע לכל מכונה
+  html+='<div style="font-size:9px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px;">ממוצע לתקופה לפי מכונה</div>';
+  allMachineIds.forEach(function(mid,idx){
+    var avg=machinePeriodAvg(mid,"pctB");
+    var hasDays=machineData[mid].some(function(d){return d.dayDuration>0;});
+    if(!hasDays)return;
+    html+='<div class="bar-row">';
+    html+='<div class="bar-label-row">';
+    html+='<span class="bar-name">'+mid+'</span>';
+    html+='<span class="bar-val" style="color:'+machineColor(idx,"0.9")+'">'+Math.round(avg)+'%</span>';
+    html+='</div>';
+    html+='<div class="bar-track"><div class="bar-fill" style="width:'+Math.min(avg,100)+'%;background:'+machineColor(idx,"0.7")+'"></div></div>';
+    html+='</div>';
+  });
+  html+='</div>';
+
+  document.getElementById("results-area").innerHTML=html;
+  document.getElementById("print-btn-area").style.display="block";
+
+  // ── גרפי קנבס — אחרי render ──
+  setTimeout(function(){
+    drawUtilCanvas("util-chart-a","pctA",days,allMachineIds,machineData,dayMaxActive,true);
+    drawUtilCanvas("util-chart-b","pctB",days,allMachineIds,machineData,dayMaxActive,false);
+  },150);
+}
+
+// ── פונקציית ציור גרף ניצולת ──
+function drawUtilCanvas(canvasId,field,days,machineIds,machineData,dayMaxActive,showHundredLine){
+  var canvas=document.getElementById(canvasId);if(!canvas)return;
+  var ctx=canvas.getContext("2d");
+  var dpr=window.devicePixelRatio||1,W=canvas.offsetWidth||300,H=200;
+  canvas.width=W*dpr;canvas.height=H*dpr;canvas.style.width=W+"px";canvas.style.height=H+"px";
+  ctx.scale(dpr,dpr);ctx.clearRect(0,0,W,H);
+  var padL=34,padR=10,padT=16,padB=32;
+  var gW=W-padL-padR,gH=H-padT-padB;
+
+  // ציר Y — מקסימום 120 לפוז א', 100 לפוז ב'
+  var yMax=showHundredLine?120:100;
+
+  // קווי רשת
+  var gridVals=showHundredLine?[0,25,50,75,100,120]:[0,25,50,75,100];
+  gridVals.forEach(function(v){
+    var y=padT+gH-(gH*v/yMax);
+    ctx.strokeStyle=v===100&&showHundredLine?"rgba(245,158,11,0.5)":"rgba(255,255,255,0.05)";
+    ctx.lineWidth=v===100&&showHundredLine?1.5:1;
+    if(v===100&&showHundredLine)ctx.setLineDash([4,3]);else ctx.setLineDash([]);
+    ctx.beginPath();ctx.moveTo(padL,y);ctx.lineTo(W-padR,y);ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle="rgba(85,94,117,0.8)";ctx.font="7px Heebo,sans-serif";ctx.textAlign="right";
+    ctx.fillText(v+"%",padL-3,y+3);
+  });
+
+  var PALETTE=["rgba(96,165,250,","rgba(34,197,94,","rgba(245,158,11,","rgba(168,85,247,","rgba(6,182,212,","rgba(239,68,68,","rgba(251,191,36,","rgba(52,211,153,"];
+  function mColor(idx,a){return PALETTE[idx%PALETTE.length]+a+")";}
+
+  // רוחב עמודה לפי מספר מכונות ימים
+  var activeMachines=machineIds.filter(function(mid){
+    return machineData[mid].some(function(d){return d.dayDuration>0;});
+  });
+  var nM=activeMachines.length||1;
+  var dayW=gW/days.length;
+  var barW=Math.min(dayW*0.85/nM, 20);
+  var groupGap=dayW*0.075;
+
+  days.forEach(function(day,di){
+    var dayX=padL+di*dayW+groupGap;
+    var hasAny=false;
+    activeMachines.forEach(function(mid,mi){
+      var val=machineData[mid][di][field];
+      if(!val&&val!==0)return;
+      hasAny=true;
+      var drawVal=Math.min(val,yMax);
+      var h=drawVal?(drawVal/yMax)*gH:0;
+      var x=dayX+mi*barW;
+      var y=padT+gH-h;
+      var mIdx=machineIds.indexOf(mid);
+      var gr=ctx.createLinearGradient(0,y,0,y+h);
+      gr.addColorStop(0,mColor(mIdx,"0.9"));gr.addColorStop(1,mColor(mIdx,"0.3"));
+      ctx.fillStyle=gr;
+      ctx.beginPath();
+      if(ctx.roundRect)ctx.roundRect(x,y,barW-1,Math.max(h,1),2);else ctx.rect(x,y,barW-1,Math.max(h,1));
+      ctx.fill();
+      // ערך מעל העמודה אם > 0 ורק אם מספיק מקום
+      if(val>0&&barW>=8){
+        ctx.fillStyle=mColor(mIdx,"0.95");ctx.font="bold 7px Heebo,sans-serif";ctx.textAlign="center";
+        ctx.fillText(Math.round(val)+"%",x+barW/2-0.5,y-2);
+      }
+    });
+    // תווית ציר X
+    ctx.fillStyle="rgba(85,94,117,0.8)";ctx.font="7px Heebo,sans-serif";ctx.textAlign="center";
+    ctx.fillText(day.label,padL+di*dayW+dayW/2,H-padB+10);
+  });
+
+  // מקרא מכונות
+  if(activeMachines.length>0&&activeMachines.length<=12){
+    var legX=padL,legY=padT-2;
+    var legStep=Math.floor(gW/activeMachines.length);
+    activeMachines.forEach(function(mid,mi){
+      var mIdx=machineIds.indexOf(mid);
+      ctx.fillStyle=mColor(mIdx,"0.9");
+      ctx.fillRect(legX+mi*legStep,legY,7,7);
+      ctx.fillStyle="rgba(139,147,168,0.9)";ctx.font="7px Heebo,sans-serif";ctx.textAlign="right";
+      ctx.fillText(mid,legX+mi*legStep+legStep-2,legY+6);
+    });
+  }
+}
+
+function multiSel(id,opts,label){
+  var items=opts.map(function(o){
+    return'<label style="display:flex;align-items:center;gap:6px;padding:4px 0;font-size:12px;cursor:pointer">'+
+      '<input type="checkbox" class="ms-cb" data-group="'+id+'" value="'+o.value+'"> '+o.label+'</label>';
+  }).join("");
+  return'<div class="filter-group full"><div class="filter-label">'+label+'</div>'+
+    '<div style="max-height:120px;overflow-y:auto;background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:6px 10px">'+
+    items+'</div></div>';
+}
+function getMultiVal(id){
+  var cbs=document.querySelectorAll('.ms-cb[data-group="'+id+'"]:checked');
+  return Array.from(cbs).map(function(c){return c.value;});
+}
+function buildFilters(tab){
+  var cOpts=clients.map(function(c){return'<option value="'+c.id+'">'+c.name+'</option>';}).join("");
+  var mOpts=machines.map(function(m){return'<option value="'+m.id+'">'+m.id+' — '+m.type+'</option>';}).join("");
+  var sOpts=["כביסה","ייבוש","גיהוץ","אריזה","שקילה","מוכן","שינוע","נמסר ללקוח"].map(function(s){return'<option value="'+s+'">'+s+'</option>';}).join("");
+  var cartOpts=[101,102,103,104].map(function(c){return'<option value="'+c+'">'+c+'</option>';}).join("");
+  var ws={};journal.forEach(function(j){if(j.worker)ws[j.worker]=true;});
+  var wOpts=Object.keys(ws).map(function(w){return'<option value="'+w+'">'+w+'</option>';}).join("");
+  var today=new Date().toISOString().slice(0,10),ms=today.slice(0,7)+"-01";
+  function sel(id,opts,lbl){return'<div class="filter-group"><div class="filter-label">'+lbl+'</div><select class="filter-select" id="'+id+'"><option value="">— הכל —</option>'+opts+'</select></div>';}
+  function inp(id,lbl,val){return'<div class="filter-group full"><div class="filter-label">'+lbl+'</div><input type="date" class="filter-input" id="'+id+'" value="'+val+'"></div>';}
+  // opts for multiSel (object arrays)
+  var cOptsM=clients.map(function(c){return{value:String(c.id),label:c.name};});
+  var mOptsM=machines.map(function(m){return{value:m.id,label:m.id+' — '+m.type};});
+  var sOptsM=["כביסה","ייבוש","גיהוץ","אריזה","שקילה","מוכן","שינוע","נמסר ללקוח"].map(function(s){return{value:s,label:s};});
+  var cartOptsM=[101,102,103,104].map(function(c){return{value:String(c),label:String(c)};});
+  var wOptsM=Object.keys(ws).map(function(w){return{value:w,label:w};});
+  var h="";
+  if(tab==="client")h=sel("f-client",cOpts,"לקוח")+inp("f-from","מתאריך",ms)+inp("f-to","עד תאריך",today);
+  else if(tab==="machine")h=sel("f-machine",mOpts,"מכונה")+sel("f-step",sOpts,"שלב")+sel("f-client-m",cOpts,"לקוח");
+  else if(tab==="step")h=sel("f-step2",sOpts,"שלב")+sel("f-client2",cOpts,"לקוח")+sel("f-machine2",mOpts,"מכונה");
+  else if(tab==="cart")h=sel("f-cart",cartOpts,"עגלה")+sel("f-client3",cOpts,"לקוח")+sel("f-step3",sOpts,"שלב");
+  else if(tab==="worker")h=sel("f-worker",wOpts,"עובד")+inp("f-worker-from","מתאריך",ms)+inp("f-worker-to","עד תאריך",today);
+  else if(tab==="custom")h=multiSel("fc-client",cOptsM,"לקוח")+multiSel("fc-machine",mOptsM,"מכונה")+multiSel("fc-step",sOptsM,"שלב")+multiSel("fc-cart",cartOptsM,"עגלה")+multiSel("fc-worker",wOptsM,"עובד")+inp("fc-from","מתאריך",ms)+inp("fc-to","עד תאריך",today);
+  document.getElementById("filter-fields").innerHTML=h;
+}
+function gv(id){var e=document.getElementById(id);return e?e.value:"";}
+function runReport(){
+  if(currentTab==="utilization"){runUtilizationReport();return;}
+  var rows=journal.slice(),title="",gb="";
+  if(currentTab==="client"){
+    var cl=gv("f-client"),fr=gv("f-from"),to=gv("f-to");
+    if(cl)rows=rows.filter(function(r){return r.clientId===+cl;});
+    if(fr)rows=rows.filter(function(r){return serialToYMD(r.time)>=fr;});
+    if(to)rows=rows.filter(function(r){return serialToYMD(r.time)<=to;});
+    title=cl?(clients.find(function(c){return c.id===+cl;})||{name:"?"}).name+" — סיכום":"סיכום לפי לקוח";gb="client";
+  } else if(currentTab==="machine"){
+    var mc=gv("f-machine"),st=gv("f-step"),cl=gv("f-client-m");
+    if(mc)rows=rows.filter(function(r){return r.machine===mc;});
+    if(st)rows=rows.filter(function(r){return r.step===st;});
+    if(cl)rows=rows.filter(function(r){return r.clientId===+cl;});
+    title="סיכום לפי מכונה";gb="machine";
+  } else if(currentTab==="step"){
+    var st=gv("f-step2"),cl=gv("f-client2"),mc=gv("f-machine2");
+    if(st)rows=rows.filter(function(r){return r.step===st;});
+    if(cl)rows=rows.filter(function(r){return r.clientId===+cl;});
+    if(mc)rows=rows.filter(function(r){return r.machine===mc;});
+    title="סיכום לפי שלב";gb="step";
+  } else if(currentTab==="cart"){
+    var ct=gv("f-cart"),cl=gv("f-client3"),st=gv("f-step3");
+    if(ct)rows=rows.filter(function(r){return r.cart==ct;});
+    if(cl)rows=rows.filter(function(r){return r.clientId===+cl;});
+    if(st)rows=rows.filter(function(r){return r.step===st;});
+    title="סיכום לפי עגלה";gb="cart";
+  } else if(currentTab==="worker"){
+    var wk=gv("f-worker"),fr=gv("f-worker-from"),to=gv("f-worker-to");
+    if(wk)rows=rows.filter(function(r){return r.worker===wk;});
+    if(fr)rows=rows.filter(function(r){return serialToYMD(r.time)>=fr;});
+    if(to)rows=rows.filter(function(r){return serialToYMD(r.time)<=to;});
+    title="סיכום לפי עובד";gb="worker";
+  } else if(currentTab==="custom"){
+    var cls=getMultiVal("fc-client"),mcs=getMultiVal("fc-machine"),sts=getMultiVal("fc-step"),cts=getMultiVal("fc-cart"),wks=getMultiVal("fc-worker"),fr=gv("fc-from"),to=gv("fc-to");
+    if(cls.length)rows=rows.filter(function(r){return cls.indexOf(String(r.clientId))!==-1;});
+    if(mcs.length)rows=rows.filter(function(r){return mcs.indexOf(r.machine||"")!==-1;});
+    if(sts.length)rows=rows.filter(function(r){return sts.indexOf(r.step||"")!==-1;});
+    if(cts.length)rows=rows.filter(function(r){return cts.indexOf(String(r.cart))!==-1;});
+    if(wks.length)rows=rows.filter(function(r){return wks.indexOf(r.worker||"")!==-1;});
+    if(fr)rows=rows.filter(function(r){return serialToYMD(r.time)>=fr;});
+    if(to)rows=rows.filter(function(r){return serialToYMD(r.time)<=to;});
+    title="פילטר מתקדם";gb="custom";
+  }
+  renderResults(rows,title,gb);
+}
+function renderResults(rows,title,gb){
+  var ra=document.getElementById("results-area");
+  if(!rows.length){ra.innerHTML='<div class="result-empty">אין תוצאות לפילטר שנבחר</div>';return;}
+  var totalW=rows.reduce(function(s,r){return s+(r.weight||0);},0);
+  var totalA=rows.reduce(function(s,r){return s+(r.amount||0);},0);
+  var groups={};
+  rows.forEach(function(r){
+    var k="";
+    if(gb==="client"||gb==="custom"){var c=clients.find(function(x){return x.id===r.clientId;});k=c?c.name:"לא ידוע";}
+    else if(gb==="machine")k=r.machine||"ללא מכונה";
+    else if(gb==="step")k=r.step;
+    else if(gb==="cart")k="עגלה "+r.cart;
+    else if(gb==="worker")k=r.worker||"לא מוגדר";
+    if(!groups[k])groups[k]={count:0,weight:0,amount:0};
+    groups[k].count++;groups[k].weight+=(r.weight||0);groups[k].amount+=(r.amount||0);
+  });
+  var sorted=Object.entries(groups).sort(function(a,b){return(b[1].amount-a[1].amount)||b[1].count-a[1].count;});
+  var maxA=sorted.length?Math.max.apply(null,sorted.map(function(g){return g[1].amount||g[1].count;}))||1:1;
+  var html='<div class="section-hdr"><div class="section-title">'+title+'</div><div class="section-count">'+rows.length+' רשומות</div></div>';
+  html+='<div class="result-summary">'+
+    '<div class="rs-box"><div class="rs-num">'+rows.length+'</div><div class="rs-lbl">סה"כ פעולות</div></div>'+
+    '<div class="rs-box"><div class="rs-num">'+Math.round(totalW).toLocaleString()+' ק"ג</div><div class="rs-lbl">משקל כולל</div></div>'+
+    '<div class="rs-box"><div class="rs-num">₪'+Math.round(totalA).toLocaleString()+'</div><div class="rs-lbl">סה"כ חיוב</div></div>'+
+    '<div class="rs-box"><div class="rs-num">'+rows.filter(function(r){return r.weight;}).length+'</div><div class="rs-lbl">שקילות</div></div>'+
+    '</div>';
+  if(sorted.length>1){
+    html+='<div class="card"><div class="card-title">התפלגות</div>';
+    sorted.forEach(function(e){
+      var k=e[0],v=e[1],bar=Math.round(((v.amount||v.count)/maxA)*100);
+      html+='<div class="bar-row"><div class="bar-label-row"><span class="bar-name">'+k+'</span><span class="bar-val">'+(v.amount?"₪"+v.amount.toLocaleString():v.count+" פעולות")+'</span></div>'+
+        '<div class="bar-track"><div class="bar-fill" style="width:'+bar+'%"></div></div>'+
+        (v.weight?'<div style="font-size:9px;color:var(--text3);margin-top:2px">'+Math.round(v.weight).toLocaleString()+' ק"ג | '+v.count+' פעולות</div>':'')+
+        '</div>';
+    });
+    html+='</div>';
+  }
+  html+='<div class="card"><div class="card-title">סיכום קליטות</div>';
+  // קבץ לפי קליטה — רק קליטות שעברו שקילה
+  var klitaMap={};
+  rows.forEach(function(r){
+    if(!r.klitaId)return;
+    var hasWeight=rows.some(function(x){return x.klitaId===r.klitaId&&x.step==="שקילה";});
+    if(!hasWeight)return;
+    var k=allKlitot.find(function(x){return x.id===r.klitaId;})||klitot.find(function(x){return x.id===r.klitaId;});
+    if(!k)return;
+    var kid=r.klitaId;
+    if(!klitaMap[kid])klitaMap[kid]={klita:k,rows:[],weight:0,amount:0};
+    klitaMap[kid].rows.push(r);
+    klitaMap[kid].weight+=(r.weight||0);
+    klitaMap[kid].amount+=(r.amount||0);
+  });
+  var klitaEntries=Object.values(klitaMap).sort(function(a,b){return(b.klita.dateRaw||0)-(a.klita.dateRaw||0);});
+  if(!klitaEntries.length){
+    html+='<div class="result-empty">אין קליטות עם שקילה לפילטר שנבחר</div>';
+  } else {
+    klitaEntries.forEach(function(entry,idx){
+      var k=entry.klita;
+      var c=clients.find(function(x){return x.id===k.clientId;})||{name:"—"};
+      var isDelivered=k.delivered;
+      var expandId="expand-"+idx;
+      html+='<div style="border-bottom:1px solid var(--border)">';
+      html+='<div style="display:flex;align-items:center;padding:12px 4px;cursor:pointer;gap:10px;" onclick="toggleExpand(\''+expandId+'\')">';
+      html+='<div style="flex:1">';
+      html+='<div style="font-size:14px;font-weight:700">'+c.name+'</div>';
+      html+='<div style="display:flex;align-items:center;gap:6px;margin-top:3px">';
+      html+='<div style="font-size:11px;color:var(--text3)">'+fmtDate(k.dateRaw)+'</div>';
+      if(isDelivered){
+        html+='<span class="badge badge-green">✓ נמסר</span>';
+      } else {
+        html+='<span class="badge badge-yellow">⏳ טרם נמסר</span>';
+      }
+      html+='</div></div>';
+      html+='<div style="text-align:left">';
+      html+='<div style="font-size:16px;font-weight:900;color:var(--green)">'+(entry.amount?"₪"+Math.round(entry.amount).toLocaleString():"—")+'</div>';
+      html+='<div style="font-size:10px;color:var(--text3);margin-top:2px">'+(entry.weight?Math.round(entry.weight)+' ק"ג':"")+'</div>';
+      html+='</div>';
+      html+='<div style="color:var(--text3);font-size:12px;margin-right:4px" id="chev-'+expandId+'">▼</div>';
+      html+='</div>';
+      // פירוט מורחב
+      html+='<div id="'+expandId+'" style="display:none;padding:0 4px 12px 4px;">';
+      entry.rows.filter(function(r){return r.step==="שקילה";}).forEach(function(r){
+        html+='<div class="hist-item">'+
+          '<div class="hist-dot" style="background:rgba(6,182,212,0.1)">⚖️</div>'+
+          '<div style="flex:1"><div style="font-size:12px;font-weight:600">שקילה — עגלה '+r.cart+'</div>'+
+          '<div style="font-size:10px;color:var(--text3)">'+fmtDateTime(r.time)+(r.machine?" · "+r.machine:"")+'</div></div>'+
+          (r.weight?'<div style="font-size:12px;font-weight:700;color:var(--accent2)">'+r.weight+'ק"ג · ₪'+r.amount.toLocaleString()+'</div>':"")+
+          '</div>';
+      });
+      html+='</div></div>';
+    });
+  }
+  html+='</div>';
+  ra.innerHTML=html;
+  document.getElementById("print-btn-area").style.display="block";
+}
+function printReport(){
+  var content=document.getElementById("results-area").innerHTML;
+  var win=window.open("","_blank");
+  win.document.write('<!DOCTYPE html><html dir="rtl"><head><meta charset="UTF-8"><title>דוח NOBLE</title>');
+  win.document.write('<style>body{font-family:Heebo,sans-serif;direction:rtl;padding:20px;color:#000;}.card{border:1px solid #ddd;border-radius:8px;padding:14px;margin-bottom:14px;}.card-title{font-size:10px;text-transform:uppercase;color:#666;margin-bottom:10px;}.detail-row{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #eee;}.rt-row{display:flex;padding:7px 12px;border-bottom:1px solid #eee;gap:10px;}.rt-name{flex:1;font-size:12px;}.rt-val{font-size:12px;font-weight:700;min-width:70px;text-align:left;}.rt-sub{font-size:10px;color:#666;min-width:60px;text-align:left;}.result-summary{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;}.rs-box{border:1px solid #ddd;border-radius:8px;padding:10px;}.rs-num{font-size:18px;font-weight:900;}.rs-lbl{font-size:9px;color:#666;}.section-hdr{display:flex;justify-content:space-between;margin-bottom:10px;margin-top:14px;}.section-title{font-size:15px;font-weight:700;}.bar-row{padding:7px 12px;border-bottom:1px solid #eee;}.bar-label-row{display:flex;justify-content:space-between;margin-bottom:3px;}@media print{button{display:none!important;}}</style>');
+  win.document.write('</head><body><h2 style="margin-bottom:4px;">NOBLE — דוח</h2><div style="font-size:11px;color:#666;margin-bottom:18px;">'+new Date().toLocaleDateString("he-IL")+'</div>');
+  win.document.write(content);
+  win.document.write('<script>window.onload=function(){window.print();}<\/script></body></html>');
+  win.document.close();
+}
+
+// ═══════════════════════════════════════════════
+// GOOGLE SHEETS LOADER
+// ═══════════════════════════════════════════════
+var SHEET_ID="1j0FfEXKYNT5PbGLhl8Vl8nf52H_easEaFD8QUG2eoyw";
+var EXPENSES_SHEET_ID="1P3-ua1F4MB0Vy1WnaKpYDJUI9_of-Kmy6-pg3yFY-KY";
+var expenses=[],expensesCash=[],expensesIncome=[],expensesLoaded=false;
+function showLoader(msg){document.getElementById("loader-msg").textContent=msg||"טוען נתונים...";document.getElementById("loader-overlay").style.display="flex";}
+function hideLoader(){document.getElementById("loader-overlay").style.display="none";}
+function parseSheet(text){
+  var json=JSON.parse(text.replace(/^[^(]+\(|\);?$/g,""));
+  var cols=json.table.cols.map(function(c){return c.label;});
+  return json.table.rows.map(function(r){var obj={};cols.forEach(function(c,i){obj[c]=r.c&&r.c[i]?r.c[i].v:"";});return obj;});
+}
+function loadFromSheet(){
+  showLoader("מתחבר לגיליון...");
+  var base="https://docs.google.com/spreadsheets/d/"+SHEET_ID+"/gviz/tq?tqx=out:json&sheet=";
+  var sheets=["לקוחות","קליטה","מכונות","יומן","עגלות","קליטת עגלות","עובדים"];
+  var results=[],loaded=0;
+  function onAllLoaded(){
+    var rawC=results[0]||[],rawK=results[1]||[],rawM=results[2]||[],rawJ=results[3]||[],rawCart=results[4]||[],rawCA=results[5]||[],rawW=results[6]||[];
+    // מפת עובדים: מזהה → שם
+    var workerNameMap={};
+    rawW.forEach(function(r){
+      // תמיכה בשני סדרי עמודות אפשריים
+      var id=String(r["מזהה עובד"]||r["שם עובד"]||"");
+      var name=String(r["שם עובד"]||r["מזהה עובד"]||"");
+      // אם המזהה הוא מספר — זהו המזהה האמיתי
+      if(!isNaN(Number(id))&&Number(id)>0){
+        workerNameMap[id]=name;
+      } else {
+        // המזהה הוא טקסט — ייתכן שהעמודות הפוכות
+        workerNameMap[id]=name;
+        // נרשם גם לפי המספר אם יש
+        if(r["מזהה עובד"]&&!isNaN(Number(r["מזהה עובד"])))
+          workerNameMap[String(Number(r["מזהה עובד"]))]=String(r["שם עובד"]||"");
+      }
+    });
+    clients.length=0;
+    rawC.forEach(function(r){if(r["מזהה לקוח"])clients.push({id:Number(r["מזהה לקוח"]),name:r["שם המלון"]||"—",price:Number(r["מחיר לקילו"])||0});});
+    cartAssignments.length=0;
+    rawCA.forEach(function(r){
+      if(!r["מזהה שיוך"])return;
+      cartAssignments.push({id:String(r["מזהה שיוך"]),klitaId:String(r["קישור לקליטה"]||""),cartId:String(r["קישור לעגלה"]||""),active:(r["פעיל"]===true||r["פעיל"]===1||r["פעיל"]==="TRUE")});
+    });
+    // ═══════════════════════════════════════════════════════════
+    // קביעת קליטות סגורות — משקף את לוגיקת AppSheet
+    //
+    // AppSheet מגדיר "כל העגלות שוחררו" כך:
+    //   יש לפחות שיוך אחד ב-קליטת עגלות  AND  כולם פעיל=FALSE
+    //
+    // ה-Slice "קליטות פעילות"  = NOT(כל העגלות שוחררו)
+    // ה-Slice "קליטות סגורות" = כל העגלות שוחררו
+    //
+    // מקור האמת: עמודת פעיל בגיליון קליטת עגלות.
+    // AppSheet מעדכן אותה דרך כפתור "שחרור עגלה".
+    // ═══════════════════════════════════════════════════════════
+
+    // שלב 1: בנה מפה klitaId → { hasAny, hasActive }
+    var klitaCartStatus={};
+    rawCA.forEach(function(r){
+      if(!r["קישור לקליטה"])return;
+      var kid=String(r["קישור לקליטה"]);
+      if(!klitaCartStatus[kid])klitaCartStatus[kid]={hasAny:false,hasActive:false};
+      klitaCartStatus[kid].hasAny=true;
+      if(r["פעיל"]===true||r["פעיל"]===1||r["פעיל"]==="TRUE")
+        klitaCartStatus[kid].hasActive=true;
+    });
+
+    // שלב 2: קליטה סגורה = יש לה שיוכים וכולם שוחררו (פעיל=FALSE)
+    var closedKlitaIds={};
+    Object.keys(klitaCartStatus).forEach(function(kid){
+      var s=klitaCartStatus[kid];
+      if(s.hasAny&&!s.hasActive) closedKlitaIds[kid]=true;
+    });
+
+    // deliveredIds — לצורך שדה delivered בהיסטוריה (נמסר ללקוח ביומן)
+    var deliveredIds={};
+    rawJ.forEach(function(r){if(r["שם השלב"]==="נמסר ללקוח"&&r["קישור לקליטה"])deliveredIds[String(r["קישור לקליטה"])]=true;});
+    allKlitot.length=0;
+    rawK.forEach(function(r){
+      if(!r["מזהה קליטה"])return;
+      allKlitot.push({id:String(r["מזהה קליטה"]),clientId:Number(r["קישור ללקוח"])||0,total:Number(r['סה"כ חיוב'])||0,dateRaw:Number(r["שעת קליטה"])||0,delivered:!!(deliveredIds[String(r["מזהה קליטה"])]||closedKlitaIds[String(r["מזהה קליטה"])]),paid:(function(v){return v===true||v===1||v==="true"||v==="TRUE"||v==="True"||v==="1"||v==="כן"||v==="yes"||v==="YES";}(r["שולם"]))});
+    });
+    klitot.length=0;
+    rawK.forEach(function(r){
+      if(!r["מזהה קליטה"]||deliveredIds[String(r["מזהה קליטה"])]||closedKlitaIds[String(r["מזהה קליטה"])])return;
+      klitot.push({id:String(r["מזהה קליטה"]),clientId:Number(r["קישור ללקוח"])||0,status:r["הסטטוס"]||"—",price:Number(r["מחיר לקילו לחיוב"])||0,total:Number(r['סה"כ חיוב'])||0,paid:(function(v){return v===true||v===1||v==="true"||v==="TRUE"||v==="True"||v==="1"||v==="כן"||v==="yes"||v==="YES";}(r["שולם"])),dateRaw:Number(r["שעת קליטה"])||0});
+    });
+    // מכונות — ברירת מחדל אם הגיליון ריק
+    machines.length=0;
+    var defaults=[{id:"M1",type:"כביסה"},{id:"M2",type:"כביסה"},{id:"M3",type:"כביסה"},{id:"M4",type:"כביסה"},{id:"M5",type:"כביסה"},{id:"M6",type:"כביסה"},{id:"M7",type:"כביסה"},{id:"M8",type:"כביסה"},{id:"B1",type:"מייבש"},{id:"B2",type:"מייבש"},{id:"G1",type:"מעגלה"},{id:"G2",type:"מעגלה"},{id:"A1",type:"מכונת אריזה"},{id:"L1",type:"משקל"}];
+    defaults.forEach(function(d){machines.push({id:d.id,type:d.type,status:"פנויה"});});
+    rawM.forEach(function(r){
+      if(!r["מזהה מכונה"])return;
+      var m=machines.find(function(x){return x.id===String(r["מזהה מכונה"]);});
+      // זיהוי סטטוס — בדוק עמודת סטטוס ישירות, ואז סרוק את כל השורה
+      var statusVal="פנויה";
+      var directStatus=String(r["סטטוס"]||r["סטטוס מכונה"]||"").replace(/\s/g,"");
+      if(directStatus.indexOf("תקול")!==-1) statusVal="תקול";
+      if(statusVal==="פנויה"){
+        Object.keys(r).forEach(function(col){
+          var v=String(r[col]||"").replace(/\s/g,"");
+          if(v==="תקול"||v==="תקולה") statusVal="תקול";
+        });
+      }
+      if(m){
+        m.status=statusVal;
+        if(r["סוג מכונה"]) m.type=String(r["סוג מכונה"]).trim();
+      } else {
+        machines.push({id:String(r["מזהה מכונה"]),type:String(r["סוג מכונה"]||"").trim(),status:statusVal});
+      }
+    });
+    journal.length=0;
+    rawJ.forEach(function(r){
+      if(!r["מזהה פעולה"])return;
+      journal.push({id:String(r["מזהה פעולה"]),clientId:Number(r["קישור ללקוח"])||0,cart:r["קישור לעגלה"]||0,step:r["שם השלב"]||"—",machine:String(r["קישור למכונה"]||""),worker:workerNameMap[String(r["קישור לעובד"]||"")]||String(r["קישור לעובד"]||""),weight:r['משקל בק"ג']?Number(r['משקל בק"ג']):null,amount:Number(r["סכום לחיוב"])||0,time:r["זמן"]||0,klitaId:String(r["קישור לקליטה"]||"")});
+    });
+    carts.length=0;
+    rawCart.forEach(function(r){if(r["מזהה עגלה"])carts.push({id:r["מזהה עגלה"],status:r["סטטוס עגלה"]||"—"});});
+    renderKlitaList();renderClients();renderMachines();renderJournal();renderCarts();renderWorkers();updateHomeStats();buildFilters("client");
+    hideLoader();
+  }
+  function loadOne(i){
+    var xhr=new XMLHttpRequest();
+    xhr.open("GET",base+encodeURIComponent(sheets[i]),true);
+    xhr.onload=function(){
+      try{results[i]=xhr.status===200?parseSheet(xhr.responseText):[];}catch(e){results[i]=[];}
+      if(++loaded===sheets.length)onAllLoaded();
+    };
+    xhr.onerror=function(){results[i]=[];if(++loaded===sheets.length)onAllLoaded();};
+    xhr.send();
+  }
+  for(var i=0;i<sheets.length;i++)loadOne(i);
+}
+setInterval(loadFromSheet,60000);
+
+// ═══════════════════════════════════════════════
+// LOGIN
+// ═══════════════════════════════════════════════
+function checkPass(){
+  var p=document.getElementById("pass-input").value;
+  if(p==="NOBEL103050"){
+    document.getElementById("login-overlay").style.display="none";
+    loadFromSheet();
+  } else {
+    document.getElementById("pass-error").style.display="block";
+    document.getElementById("pass-input").value="";
+    document.getElementById("pass-input").focus();
+  }
+}
+
+if("serviceWorker" in navigator)navigator.serviceWorker.register("sw.js");
+</script>
+</body>
+</html>
